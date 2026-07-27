@@ -12,8 +12,7 @@ export default function AdminCustomersPage() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('avenues_token');
-      const { data } = await axios.get('/api/users', { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get('/api/users');
       setCustomers(data);
     } catch {
       toast.error('Failed to load customers');
@@ -32,8 +31,7 @@ export default function AdminCustomersPage() {
   const handleDelete = async (id) => {
     if (!confirm('Delete this customer?')) return;
     try {
-      const token = localStorage.getItem('avenues_token');
-      await axios.delete(`/api/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`/api/users/${id}`);
       setCustomers(customers.filter(c => c._id !== id));
       toast.success('Customer deleted');
     } catch {

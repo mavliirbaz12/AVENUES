@@ -81,9 +81,8 @@ function ImageUploadBox({ images, onChange }) {
     try {
       const formData = new FormData();
       Array.from(files).forEach(f => formData.append('images', f));
-      const token = localStorage.getItem('avenues_token');
       const { data } = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       onChange([...images, ...data.urls]);
       toast.success(`${data.urls.length} image(s) uploaded!`);

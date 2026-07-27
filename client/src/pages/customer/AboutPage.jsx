@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { fadeUpVariants, staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
 import { Check } from 'lucide-react';
 
@@ -16,6 +17,18 @@ const promises = [
  */
 export default function AboutPage() {
   return (
+    <>
+      <Helmet>
+        <title>About Us | Avenues Perfume</title>
+        <meta name="description" content="Learn about Avenues Perfume, a luxury fragrance brand built on bold identity and quality craftsmanship." />
+        <link rel="canonical" href="https://avenues.in/about" />
+        <meta property="og:title" content="About Us | Avenues Perfume" />
+        <meta property="og:description" content="Learn about Avenues Perfume, a luxury fragrance brand built on bold identity and quality craftsmanship." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://avenues.in/about" />
+        <meta property="og:image" content="https://avenues.in/og-about.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
     <div className="pt-24 pb-16 min-h-screen bg-[#050505] text-white">
       <div className="container-luxury max-w-4xl">
         {/* Header */}
@@ -120,5 +133,6 @@ export default function AboutPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

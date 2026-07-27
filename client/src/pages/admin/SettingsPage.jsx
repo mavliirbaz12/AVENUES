@@ -16,8 +16,7 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const token = localStorage.getItem('avenues_token');
-        const { data } = await axios.get('/api/settings', { headers: { Authorization: `Bearer ${token}` } });
+        const { data } = await axios.get('/api/settings');
         setForm({
           storeName: data.storeName || '',
           storeEmail: data.storeEmail || '',

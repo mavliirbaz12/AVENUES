@@ -15,7 +15,6 @@ export default function AdminInventoryPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('avenues_token');
       const { data } = await axios.get('/api/products');
       setProducts(data);
       const inputs = {};
@@ -49,10 +48,7 @@ export default function AdminInventoryPage() {
     }
     setSaving(id);
     try {
-      const token = localStorage.getItem('avenues_token');
-      await axios.put(`/api/products/${id}`, { stock: newQty }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(`/api/products/${id}`, { stock: newQty });
       setProducts(products.map(p =>
         p._id === id ? { ...p, stock: { ...p.stock, quantity: newQty } } : p
       ));

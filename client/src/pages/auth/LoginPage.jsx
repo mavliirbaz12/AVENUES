@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Sparkles, ArrowRight } from 'lucide-react';
 import useAuthStore from '@/store/authStore';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -12,7 +13,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [resendCooldown, setResendCooldown] = useState(0);
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
 
@@ -34,24 +34,14 @@ export default function LoginPage() {
     }
   };
 
-  const handleResendVerification = async () => {
-    if (resendCooldown > 0) return;
-    try {
-      await axios.post('/api/auth/resend-verification', { email });
-      toast.success('Verification email resent! Check your inbox.');
-      setResendCooldown(60);
-      const interval = setInterval(() => {
-        setResendCooldown((prev) => {
-          if (prev <= 1) { clearInterval(interval); return 0; }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to resend');
-    }
-  };
-
   return (
+    <>
+      <Helmet>
+        <title>Sign In | Avenues Perfume</title>
+        <meta name="description" content="Sign in to your Avenues Perfume account to manage orders and preferences." />
+        <link rel="canonical" href="https://avenues.in/login" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
     <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-accent/4 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-accent/3 rounded-full blur-[120px] pointer-events-none" />
@@ -88,16 +78,16 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-white/20 text-xs leading-relaxed">
+              <p className="text-white/55 text-xs leading-relaxed">
                 "Avenues changed how I think about fragrance. The quiz nailed my personality in 60 seconds."
               </p>
-              <p className="text-white/10 text-[10px] mt-2">— Rahul M., Mumbai</p>
+              <p className="text-white/35 text-[10px] mt-2">— Rahul M., Mumbai</p>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-white/20 text-xs leading-relaxed">
+              <p className="text-white/55 text-xs leading-relaxed">
                 "Finally a brand that gets it. No more generic perfume ads — just scent that speaks."
               </p>
-              <p className="text-white/10 text-[10px] mt-2">— Priya K., Delhi</p>
+              <p className="text-white/35 text-[10px] mt-2">— Priya K., Delhi</p>
             </div>
           </div>
         </div>
@@ -113,7 +103,6 @@ export default function LoginPage() {
             <p className="text-xs text-white/25 mt-1">Enter your credentials to continue.</p>
           </div>
 
-          {/* Error banner */}
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -8 }}
@@ -139,15 +128,15 @@ export default function LoginPage() {
               <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Email</label>
               <div className="relative group">
                 <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                  className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
-                  placeholder="you@example.com"
-                  required
-                  autoFocus
-                />
+<input
+	                   type="email"
+	                   value={email}
+	                   onChange={(e) => setEmail(e.target.value)}
+	                   className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
+	                   placeholder="you@example.com"
+	                   required
+	                   autoFocus
+	                 />
               </div>
             </div>
 
@@ -209,7 +198,21 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-white/5" />
           </div>
 
-          <p className="text-center text-sm text-white/25">
+          <a
+            href="/api/auth/google"
+            className="w-full h-12 rounded-xl flex items-center justify-center gap-3 bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
+          >
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-[#050805] text-xs font-bold">G</span>
+            <span className="text-sm font-medium">Continue with Google</span>
+          </a>
+
+          <p className="text-center text-sm text-white/25 mt-4">
+            <Link to="/forgot-password" className="text-accent hover:text-accent/80 font-semibold transition-colors">
+              Forgot password?
+            </Link>
+          </p>
+
+          <p className="text-center text-sm text-white/25 mt-2">
             New here?{' '}
             <Link to="/signup" className="text-accent hover:text-accent/80 font-semibold transition-colors">
               Create an account
@@ -218,5 +221,6 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+    </>
   );
 }

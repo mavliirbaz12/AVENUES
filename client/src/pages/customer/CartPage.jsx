@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import useCartStore from '@/store/cartStore';
@@ -9,6 +10,18 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
+    <>
+      <Helmet>
+        <title>Shopping Cart | Avenues Perfume</title>
+        <meta name="description" content="Review your shopping cart and proceed to checkout at Avenues Perfume." />
+        <link rel="canonical" href="https://avenues.in/cart" />
+        <meta property="og:title" content="Shopping Cart | Avenues Perfume" />
+        <meta property="og:description" content="Review your cart and complete your purchase." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://avenues.in/cart" />
+        <meta property="og:image" content="https://avenues.in/og-cart.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <div className="pt-24 pb-16 min-h-screen bg-[#050505] text-white flex items-center justify-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <ShoppingBag size={64} className="text-white/20 mx-auto mb-4" />
@@ -16,12 +29,25 @@ export default function CartPage() {
           <p className="text-white/60 mb-6">Your cart's empty. Let's fix that.</p>
           <Link to="/shop" className="btn-accent text-primary-900 inline-flex items-center gap-2">Browse Scents <ArrowRight size={16} /></Link>
         </motion.div>
-      </div>
-    );
-  }
+       </div>
+       </>
+     );
+   }
 
   return (
-    <div className="pt-24 pb-16 min-h-screen bg-[#050505] text-white">
+    <>
+      <Helmet>
+        <title>Shopping Cart | Avenues Perfume</title>
+        <meta name="description" content="Review your shopping cart and proceed to checkout at Avenues Perfume." />
+        <link rel="canonical" href="https://avenues.in/cart" />
+        <meta property="og:title" content="Shopping Cart | Avenues Perfume" />
+        <meta property="og:description" content="Review your cart and complete your purchase." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://avenues.in/cart" />
+        <meta property="og:image" content="https://avenues.in/og-cart.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+      <div className="pt-24 pb-16 min-h-screen bg-[#050505] text-white">
       <div className="container-luxury">
         <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-display text-3xl font-bold mb-8">Shopping Cart</motion.h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -66,5 +92,6 @@ export default function CartPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

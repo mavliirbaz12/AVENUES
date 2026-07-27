@@ -14,10 +14,7 @@ export default function AdminAnalyticsPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('avenues_token');
-      const { data } = await axios.get(`/api/dashboard/analytics?period=${period}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await axios.get(`/api/dashboard/analytics?period=${period}`);
       setData(data);
     } catch {
       toast.error('Failed to load analytics');

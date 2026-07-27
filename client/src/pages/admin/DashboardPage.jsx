@@ -21,14 +21,12 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const token = localStorage.getItem('avenues_token');
-        const headers = { Authorization: `Bearer ${token}` };
         const [s, sp, tp, os, ro] = await Promise.all([
-          axios.get('/api/dashboard/stats', { headers }),
-          axios.get('/api/dashboard/sales-trend', { headers }),
-          axios.get('/api/dashboard/top-products', { headers }),
-          axios.get('/api/dashboard/order-status', { headers }),
-          axios.get('/api/dashboard/recent-orders', { headers }),
+          axios.get('/api/dashboard/stats'),
+          axios.get('/api/dashboard/sales-trend'),
+          axios.get('/api/dashboard/top-products'),
+          axios.get('/api/dashboard/order-status'),
+          axios.get('/api/dashboard/recent-orders'),
         ]);
         setStats(s.data);
         setSalesData(sp.data);

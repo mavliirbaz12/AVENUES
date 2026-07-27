@@ -36,10 +36,23 @@ export const updateOrderStatus = async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    order.status = req.body.status || order.status;
-    if (req.body.status === 'delivered') {
+    const oldStatus = order.status;
+    const newStatus = req.body.status || order.status;
+    order.status = newStatus;
+
+    if (newStatus === 'delivered') {
       order.deliveredAt = new Date();
     }
+
+    if (oldStatus !== newStatus) {
+      order.timeline = order.timeline || [];
+      order.timeline.push({
+        status: newStatus,
+        timestamp: new Date(),
+        description: req.body.description || `Order status changed to ${newStatus.replace(/_/g, ' ')}`,
+      });
+    }
+
     const updated = await order.save();
     res.json(updated);
   } catch (error) {

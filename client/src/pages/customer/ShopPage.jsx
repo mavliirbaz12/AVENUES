@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
@@ -86,6 +87,20 @@ export default function ShopPage() {
   }, [searchQuery, sortBy, selectedTag, priceRange, products]);
 
   return (
+    <>
+      <Helmet>
+        <title>Shop | Avenues Perfume</title>
+        <meta name="description" content="Browse our curated collection of luxury perfumes at Avenues Perfume. Find your signature scent." />
+        <link rel="canonical" href="https://avenues.in/shop" />
+        <meta property="og:title" content="Shop | Avenues Perfume" />
+        <meta property="og:description" content="Browse our curated collection of luxury perfumes. Find your signature scent." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://avenues.in/shop" />
+        <meta property="og:image" content="https://avenues.in/og-shop.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Shop | Avenues Perfume" />
+        <meta name="twitter:description" content="Browse our curated collection of luxury perfumes. Find your signature scent." />
+      </Helmet>
     <div className="pt-24 pb-16 min-h-screen bg-[#050505] text-white">
       <div className="container-luxury">
         {/* Header */}
@@ -250,5 +265,6 @@ export default function ShopPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

@@ -7,19 +7,17 @@ const useAuthStore = create((set) => {
 
   return {
     user: null,
-    token: localStorage.getItem('avenues_token') || null,
-    isAuthenticated: !!localStorage.getItem('avenues_token'),
+    token: null,
+    isAuthenticated: false,
     isLoading: false,
 
     login: (userData, token) => {
-      localStorage.setItem('avenues_token', token);
       localStorage.setItem('avenues_user', JSON.stringify(userData));
       set({ user: userData, token, isAuthenticated: true });
       loadWishlist();
     },
 
     logout: () => {
-      localStorage.removeItem('avenues_token');
       localStorage.removeItem('avenues_user');
       set({ user: null, token: null, isAuthenticated: false });
       useWishlistStore.getState().clearWishlist();
@@ -31,21 +29,11 @@ const useAuthStore = create((set) => {
     },
 
     loadUser: async () => {
-      const token = localStorage.getItem('avenues_token');
-      if (!token) {
-        set({ user: null, token: null, isAuthenticated: false });
-        return;
-      }
-
       try {
-        const { data } = await axios.get('/api/auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        set({ user: data, token, isAuthenticated: true });
+        const { data } = await axios.get('/api/auth/me');
+        set({ user: data, isAuthenticated: true });
         loadWishlist();
       } catch {
-        localStorage.removeItem('avenues_token');
-        localStorage.removeItem('avenues_user');
         set({ user: null, token: null, isAuthenticated: false });
       }
     },

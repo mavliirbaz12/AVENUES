@@ -10,12 +10,13 @@ const razorpay = new Razorpay({
 // @route   POST /api/payments/create-order
 export const createOrder = async (req, res) => {
   try {
-    const { amount, currency = 'INR', receipt } = req.body;
+    const { amount, currency = 'INR', receipt, customerId } = req.body;
 
     const order = await razorpay.orders.create({
       amount: Math.round(amount * 100),
       currency,
       receipt: receipt || `rcpt_${Date.now()}`,
+      customer_id: customerId || undefined,
     });
 
     res.json({

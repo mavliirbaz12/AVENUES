@@ -23,6 +23,7 @@ export default function ProductCard({ product, index = 0 }) {
     (product.pricing?.mrp && product.pricing?.sellingPrice && product.pricing.mrp > product.pricing.sellingPrice
       ? Math.round(((product.pricing.mrp - product.pricing.sellingPrice) / product.pricing.mrp) * 100)
       : 0);
+  const hasReviews = (product.reviewCount || 0) > 0;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -58,36 +59,37 @@ export default function ProductCard({ product, index = 0 }) {
       <Link to={`/product/${product.slug}`} className="group block">
         <div className="relative bg-[#0D0D0D] border border-white/8 rounded-xl overflow-hidden hover:border-accent/25 transition-all duration-400">
 
-          {/* Image area */}
           <div
-            className="relative h-48 sm:h-56 overflow-hidden"
+            className="relative aspect-[3/4] overflow-hidden"
             style={{ background: `linear-gradient(135deg, ${product.color || '#D4AF37'}12, ${product.color || '#D4AF37'}22)` }}
           >
-            {/* Wishlist */}
             <button
               onClick={handleWishlist}
               className={cn(
-                'absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100',
-                wishlisted ? 'bg-red-500/90 text-white opacity-100' : 'bg-black/40 backdrop-blur-sm text-white/60 hover:text-red-400'
+                'absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 opacity-40 group-hover:opacity-100',
+                wishlisted ? 'bg-red-500/90 text-white opacity-100' : 'bg-black/40 backdrop-blur-sm text-white/80 hover:text-red-400'
               )}
             >
               <Heart size={13} className={wishlisted ? 'fill-white' : ''} />
             </button>
 
-            {/* Discount badge */}
             {discount > 0 && (
-              <div className="absolute top-2.5 left-2.5 z-10 bg-accent text-[#050505] text-[9px] font-black px-1.5 py-0.5 rounded tracking-wide">
-                {discount}% OFF
+              <div className="absolute top-2.5 left-2.5 z-10 bg-accent text-[#050505] text-[11px] font-black px-2.5 py-1 rounded-full tracking-wide flex items-center gap-1">
+                <span>{discount}%</span>
+                <span className="text-[9px] opacity-80">OFF</span>
               </div>
             )}
 
-            {/* Product image */}
             <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
               {product.images?.[0] && !imageError ? (
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={product.images[0]}
                   alt={product.name}
-                  className="h-36 sm:h-44 w-full object-contain drop-shadow-lg"
+                  width="400"
+                  height="500"
+                  className="h-full w-full object-contain drop-shadow-lg p-4"
                   onError={() => setImageError(true)}
                 />
               ) : (
@@ -97,8 +99,7 @@ export default function ProductCard({ product, index = 0 }) {
               )}
             </div>
 
-            {/* Quick add button — appears on hover */}
-            <div className="absolute inset-x-0 bottom-0 p-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
+            <div className="absolute inset-x-0 bottom-0 p-2.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 translate-y-1 sm:translate-y-0 sm:group-hover:translate-y-0">
               <button
                 onClick={handleAddToCart}
                 className="w-full py-2 bg-white/10 backdrop-blur-md text-white text-[11px] font-semibold rounded-lg flex items-center justify-center gap-1.5 hover:bg-accent hover:text-[#050505] transition-colors duration-200"
@@ -108,19 +109,28 @@ export default function ProductCard({ product, index = 0 }) {
             </div>
           </div>
 
-          {/* Content */}
           <div className="px-3 pt-2.5 pb-3">
-            {/* Name */}
             <h3 className="font-display text-[13px] font-bold text-white/90 mb-1 group-hover:text-accent transition-colors duration-300 leading-snug line-clamp-1">
               {product.name}
             </h3>
 
-            {/* Rating + Price */}
+            {product.tags && product.tags.length > 0 && (
+              <span className="text-[10px] text-white/40 bg-white/5 px-2 py-0.5 rounded-full inline-block mb-1.5">
+                {product.tags[0]}
+              </span>
+            )}
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-0.5">
-                <Star size={9} className="fill-accent text-accent" />
-                <span className="text-[10px] text-white/40">{product.rating || 5}</span>
-                <span className="text-[9px] text-white/25">({product.reviewCount || 0})</span>
+                {hasReviews ? (
+                  <>
+                    <Star size={9} className="fill-accent text-accent" />
+                    <span className="text-[10px] text-white/40">{product.rating || 5}</span>
+                    <span className="text-[9px] text-white/25">({product.reviewCount} reviews)</span>
+                  </>
+                ) : (
+                  <span className="text-[9px] text-white/25 bg-white/5 px-1.5 py-0.5 rounded-full">New</span>
+                )}
               </div>
 
               <div className="flex items-baseline gap-1.5">

@@ -13,10 +13,7 @@ export default function NotificationBell() {
   useEffect(() => {
     const fetchRecent = async () => {
       try {
-        const token = localStorage.getItem('avenues_token');
-        const { data } = await axios.get('/api/dashboard/recent-orders', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await axios.get('/api/dashboard/recent-orders');
         setOrders(data);
       } catch { /* silent */ }
     };

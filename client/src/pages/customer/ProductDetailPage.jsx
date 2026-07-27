@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ShoppingBag, Minus, Plus, Star, ChevronRight, ChevronLeft, ChevronDown, Leaf, Award, Shield, Clock, Wind, Droplets, Check, Sparkles, Zap, HeartHandshake, Package, Gem, TrendingUp } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet-async';
 import useCartStore from '@/store/cartStore';
 import useWishlistStore from '@/store/wishlistStore';
 import useUIStore from '@/store/uiStore';
@@ -10,6 +11,27 @@ import useAuthStore from '@/store/authStore';
 import { useAuthModal } from '@/components/features/AuthModal';
 import ProductCard from '@/components/features/ProductCard';
 import { formatCurrency, cn } from '@/lib/utils';
+
+function AccordionItem({ id, title, children, openAccordion, toggleAccordion }) {
+  const isOpen = openAccordion === id;
+  return (
+    <div className="border-b border-white/10 last:border-0">
+      <button onClick={() => toggleAccordion(id)} className="w-full py-5 flex items-center justify-between text-left group">
+        <span className="font-semibold text-white text-[15px] group-hover:text-accent transition-colors">{title}</span>
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.25 }}>
+          <ChevronDown size={18} className="text-white/40" />
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.28 }} className="overflow-hidden">
+            <div className="pb-6 text-white/65 text-[14px] leading-relaxed">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -134,38 +156,26 @@ export default function ProductDetailPage() {
 
   const toggleAccordion = (id) => setOpenAccordion(openAccordion === id ? null : id);
 
-  const AccordionItem = ({ id, title, children }) => (
-    <div className="border-b border-white/10 last:border-0">
-      <button
-        onClick={() => toggleAccordion(id)}
-        className="w-full py-5 flex items-center justify-between text-left group"
-      >
-        <span className="font-semibold text-white text-[15px] group-hover:text-accent transition-colors">{title}</span>
-        <motion.div animate={{ rotate: openAccordion === id ? 180 : 0 }} transition={{ duration: 0.25 }}>
-          <ChevronDown size={18} className="text-white/40" />
-        </motion.div>
-      </button>
-      <AnimatePresence>
-        {openAccordion === id && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28 }}
-            className="overflow-hidden"
-          >
-            <div className="pb-6 text-white/65 text-[14px] leading-relaxed">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
 
   const topNotes = product.fragrance?.topNotes || [];
   const heartNotes = product.fragrance?.heartNotes || [];
   const baseNotes = product.fragrance?.baseNotes || [];
 
   return (
+    <>
+      <Helmet>
+        <title>{product.name} | Avenues Perfume</title>
+        <meta name="description" content={product.description} />
+        <link rel="canonical" href={`https://avenues.in/product/${product.slug}`} />
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={product.name} />
+        <meta property="og:description" content={product.description} />
+        <meta property="og:image" content={product.images?.[0]} />
+        <meta property="og:price:amount" content={String(product.pricing.sellingPrice)} />
+        <meta property="og:price:currency" content="INR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"Product","name":product.name,"description":product.description,"image":product.images,"offers":{"@type":"Offer","price":product.pricing.sellingPrice,"currency":"INR"}})}</script>
+      </Helmet>
     <div className="bg-[#050505] text-white min-h-screen">
 
       {/* ── Breadcrumb ─────────────────────────────────────────────── */}
@@ -527,11 +537,11 @@ export default function ProductDetailPage() {
 
             {/* Accordions */}
             <div className="border border-white/10 rounded-2xl overflow-hidden bg-[#0D0D0D] divide-y divide-white/8 px-5">
-              <AccordionItem id="description" title="About This Fragrance">
+              <AccordionItem id="description" title="About This Fragrance" openAccordion={openAccordion} toggleAccordion={toggleAccordion}>
                 <p>{product.longDescription || product.shortDescription}</p>
               </AccordionItem>
 
-              <AccordionItem id="notes" title="Scent Notes">
+              <AccordionItem id="notes" title="Scent Notes" openAccordion={openAccordion} toggleAccordion={toggleAccordion}>
                 <div className="space-y-4">
                   {[
                     { label: 'Top Notes', notes: topNotes, color: '#E8D5B7', desc: 'The first impression — fresh, bright, attention-grabbing.' },
@@ -554,7 +564,7 @@ export default function ProductDetailPage() {
                 </div>
               </AccordionItem>
 
-              <AccordionItem id="benefits" title="Features & Benefits">
+              <AccordionItem id="benefits" title="Features & Benefits" openAccordion={openAccordion} toggleAccordion={toggleAccordion}>
                 <ul className="space-y-2">
                   {(product.benefits || []).map((b, i) => (
                     <li key={i} className="flex items-start gap-2.5">
@@ -565,7 +575,7 @@ export default function ProductDetailPage() {
                 </ul>
               </AccordionItem>
 
-              <AccordionItem id="usage" title="Details & Usage">
+              <AccordionItem id="usage" title="Details & Usage" openAccordion={openAccordion} toggleAccordion={toggleAccordion}>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     {[
@@ -588,7 +598,7 @@ export default function ProductDetailPage() {
                 </div>
               </AccordionItem>
 
-              <AccordionItem id="faqs" title="FAQs">
+              <AccordionItem id="faqs" title="FAQs" openAccordion={openAccordion} toggleAccordion={toggleAccordion}>
                 <div className="space-y-4">
                   {(product.faqs || []).map((faq, i) => (
                     <div key={i} className="border-b border-white/10 pb-4 last:border-0 last:pb-0">
@@ -710,5 +720,6 @@ export default function ProductDetailPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

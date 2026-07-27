@@ -60,7 +60,19 @@ const userSchema = new mongoose.Schema({
   isEmailVerified: { type: Boolean, default: false },
   emailVerificationToken: String,
   emailVerificationExpires: Date,
-  addresses: [addressSchema],
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
+   savedCards: [{
+     cardLast4: String,
+     cardBrand: String,
+     razorpayPaymentId: String,
+     createdAt: { type: Date, default: Date.now },
+   }],
+   phoneOtp: String,
+   phoneOtpExpires: Date,
+   avatarUrl: String,
+   razorpayCustomerId: String,
+   addresses: [addressSchema],
   wishlist: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
@@ -70,3 +82,4 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 export default User;
+

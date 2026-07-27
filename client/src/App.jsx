@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { useEffect, useState } from 'react';
 import useAuthStore from '@/store/authStore';
 import AuthModal from '@/components/features/AuthModal';
@@ -31,6 +32,7 @@ import NotFoundPage from '@/pages/NotFoundPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import SignupPage from '@/pages/auth/SignupPage';
 import VerifyEmailPage from '@/pages/auth/VerifyEmailPage';
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/DashboardPage';
@@ -69,6 +71,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <HelmetProvider>
         <SkipLink targetId="main-content" />
         <LiveRegions />
         <ScrollToTop />
@@ -79,6 +82,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
           {/* Customer Routes */}
           <Route element={<CustomerLayout />}>
@@ -118,6 +122,7 @@ export default function App() {
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+      </HelmetProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

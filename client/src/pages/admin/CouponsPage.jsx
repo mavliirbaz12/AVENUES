@@ -33,8 +33,7 @@ export default function AdminCouponsPage() {
 
   const fetchCoupons = async () => {
     try {
-      const token = localStorage.getItem('avenues_token');
-      const { data } = await axios.get('/api/coupons', { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get('/api/coupons');
       setCoupons(data);
     } catch { /* empty */ }
     finally { setLoading(false); }
@@ -73,8 +72,7 @@ export default function AdminCouponsPage() {
     if (!form.code || !form.value) { toast.error('Code and value are required'); return; }
     setSaving(true);
     try {
-      const token = localStorage.getItem('avenues_token');
-      const headers = { Authorization: `Bearer ${token}` };
+      const headers = {};
       const payload = {
         ...form,
         value: Number(form.value),
@@ -104,8 +102,7 @@ export default function AdminCouponsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Delete this coupon?')) return;
     try {
-      const token = localStorage.getItem('avenues_token');
-      await axios.delete(`/api/coupons/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`/api/coupons/${id}`);
       setCoupons(coupons.filter((c) => c._id !== id));
       toast.success('Coupon deleted');
     } catch { toast.error('Failed to delete'); }
@@ -113,8 +110,7 @@ export default function AdminCouponsPage() {
 
   const toggleActive = async (coupon) => {
     try {
-      const token = localStorage.getItem('avenues_token');
-      const { data } = await axios.put(`/api/coupons/${coupon._id}`, { isActive: !coupon.isActive }, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.put(`/api/coupons/${coupon._id}`, { isActive: !coupon.isActive });
       setCoupons(coupons.map((c) => c._id === coupon._id ? data : c));
     } catch { toast.error('Failed to toggle'); }
   };

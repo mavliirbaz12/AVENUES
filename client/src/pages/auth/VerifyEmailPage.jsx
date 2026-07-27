@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, Loader2, Mail, ArrowRight } from 'lucide-react';
 import useAuthStore from '@/store/authStore';
@@ -8,7 +8,6 @@ import axios from 'axios';
 
 export default function VerifyEmailPage() {
   const { token } = useParams();
-  const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
   const [status, setStatus] = useState('verifying');
   const [resendEmail, setResendEmail] = useState('');
@@ -23,12 +22,12 @@ export default function VerifyEmailPage() {
         setStatus('success');
         login(data.user, data.token);
         toast.success('Email verified! Welcome to Avenues.');
-      } catch (err) {
+      } catch {
         setStatus('error');
       }
     };
     verify();
-  }, [token]);
+  }, [token, login]);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;

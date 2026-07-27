@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Sparkles, Check, Star, ChevronRight, Inbox } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { Eye, EyeOff, Mail, Lock, User, Sparkles, Check, Star, Inbox } from 'lucide-react';
 import useAuthStore from '@/store/authStore';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { Helmet } from 'react-helmet-async';
 
 const BENEFITS = [
   '10% off your first order',
@@ -51,18 +52,13 @@ export default function SignupPage() {
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1);
   const [emailSent, setEmailSent] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
   const login = useAuthStore((s) => s.login);
 
   const update = (field, value) => setForm({ ...form, [field]: value });
-
-  const canProceedStep1 = form.email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
-  const canProceedStep2 = form.firstName.trim() && form.password.length >= 8 && form.password === form.confirmPassword;
-
-  const [error, setError] = useState('');
+  const canSubmit = form.firstName.trim() && form.email.trim() && form.password.length >= 8 && form.password === form.confirmPassword;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,6 +105,13 @@ export default function SignupPage() {
       <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-accent/4 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/3 rounded-full blur-[120px] pointer-events-none" />
 
+      <Helmet>
+        <title>Create Account | Avenues Perfume</title>
+        <meta name="description" content="Create your Avenues Perfume account and start exploring luxury fragrances." />
+        <link rel="canonical" href="https://avenues.in/signup" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -153,7 +156,7 @@ export default function SignupPage() {
                   <div className="w-5 h-5 rounded-full bg-accent/12 flex items-center justify-center flex-shrink-0">
                     <Check size={10} className="text-accent" />
                   </div>
-                  <span className="text-white/45 text-sm">{b}</span>
+                  <span className="text-white/60 text-sm">{b}</span>
                 </motion.div>
               ))}
             </div>
@@ -162,7 +165,7 @@ export default function SignupPage() {
               <div className="flex -space-x-2">
                 {[...Array(4)].map((_, i) => (
                   <div key={i} className="w-8 h-8 rounded-full bg-white/6 border-2 border-[#121212] flex items-center justify-center">
-                    <User size={11} className="text-white/25" />
+                    <User size={11} className="text-white/40" />
                   </div>
                 ))}
               </div>
@@ -172,7 +175,7 @@ export default function SignupPage() {
                     <Star key={i} size={10} className="text-accent fill-accent" />
                   ))}
                 </div>
-                <p className="text-[10px] text-white/20 mt-0.5">2,847 happy members</p>
+                <p className="text-[10px] text-white/35 mt-0.5">2,847 happy members</p>
               </div>
             </div>
           </div>
@@ -189,254 +192,181 @@ export default function SignupPage() {
             <p className="text-xs text-white/25 mt-1">Create your account. Start smelling different.</p>
           </div>
 
-          {/* Step dots */}
-          {!emailSent && (
-            <div className="flex items-center gap-2 mb-7">
-              {[1, 2].map((s) => (
-                <motion.div
-                  key={s}
-                  className="h-1 flex-1 rounded-full"
-                  animate={{
-                    backgroundColor: step >= s ? 'rgba(212,175,55,0.8)' : 'rgba(255,255,255,0.06)',
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-              ))}
-            </div>
-          )}
-
-          {error && (
+          {emailSent ? (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
+              key="email-sent"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
+              exit={{ opacity: 0 }}
+              className="text-center py-8"
             >
-              <div className="flex items-start gap-2">
-                <span className="mt-0.5">⚠</span>
+              <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Inbox size={36} className="text-accent" />
+              </div>
+              <h3 className="font-display text-xl font-bold text-white mb-2">Check Your Email</h3>
+              <p className="text-white/40 text-sm mb-1">
+                We sent a verification link to
+              </p>
+              <p className="text-white/60 text-sm font-semibold mb-6">{form.email}</p>
+              <p className="text-white/25 text-xs mb-6">
+                Click the link in the email to verify your account. The link expires in 24 hours.
+              </p>
+              <button
+                onClick={handleResend}
+                disabled={resendCooldown > 0}
+                className="text-sm text-accent hover:text-accent/80 font-medium transition-colors disabled:opacity-40"
+              >
+                {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email'}
+              </button>
+              <div className="mt-6 pt-4 border-t border-white/5">
+                <Link to="/login" className="text-sm text-white/30 hover:text-white/50 transition-colors">
+                  ← Back to Sign In
+                </Link>
+              </div>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5">⚠</span>
+                    <div>
+                      <p>{error}</p>
+                      {error.includes('already exists') && (
+                        <Link to="/login" className="text-accent font-semibold hover:underline mt-1 inline-block">
+                          Sign in instead →
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p>{error}</p>
-                  {error.includes('already exists') && (
-                    <Link to="/login" className="text-accent font-semibold hover:underline mt-1 inline-block">
-                      Sign in instead →
-                    </Link>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">First Name</label>
+                  <div className="relative group">
+                    <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
+                    <input
+                      value={form.firstName}
+                      onChange={(e) => update('firstName', e.target.value)}
+                      className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
+                      placeholder="Arjun"
+                      required
+                      autoFocus
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Last Name</label>
+                  <div className="relative group">
+                    <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
+                    <input
+                      value={form.lastName}
+                      onChange={(e) => update('lastName', e.target.value)}
+                      className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
+                      placeholder="Mehta"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Email</label>
+                <div className="relative group">
+                  <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => update('email', e.target.value)}
+                    className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Password</label>
+                <div className="relative group">
+                  <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={(e) => update('password', e.target.value)}
+                    className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-11"
+                    placeholder="Min. 8 characters"
+                    required
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/15 hover:text-white/40 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+                <PasswordStrength password={form.password} />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Confirm Password</label>
+                <div className="relative group">
+                  <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
+                  <input
+                    type="password"
+                    value={form.confirmPassword}
+                    onChange={(e) => update('confirmPassword', e.target.value)}
+                    className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
+                    placeholder="••••••••"
+                    required
+                  />
+                  {form.confirmPassword && form.password === form.confirmPassword && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                      <Check size={14} className="text-green-400" />
+                    </motion.div>
                   )}
                 </div>
               </div>
-            </motion.div>
-          )}
 
-          <AnimatePresence mode="wait">
-            {emailSent ? (
-              <motion.div
-                key="email-sent"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
+              <button
+                type="submit"
+                disabled={loading || !canSubmit}
+                className="w-full h-12 rounded-xl font-bold text-[#050505] text-sm flex items-center justify-center gap-2 relative overflow-hidden disabled:opacity-25 disabled:cursor-not-allowed transition-opacity"
+                style={{
+                  background: 'linear-gradient(135deg,#C8A827,#F5CC55,#C8A827)',
+                  boxShadow: canSubmit ? '0 4px 20px rgba(212,175,55,0.3)' : 'none',
+                }}
               >
-                <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Inbox size={36} className="text-accent" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-white mb-2">Check Your Email</h3>
-                <p className="text-white/40 text-sm mb-1">
-                  We sent a verification link to
-                </p>
-                <p className="text-white/60 text-sm font-semibold mb-6">{form.email}</p>
-                <p className="text-white/25 text-xs mb-6">
-                  Click the link in the email to verify your account. The link expires in 24 hours.
-                </p>
-                <button
-                  onClick={handleResend}
-                  disabled={resendCooldown > 0}
-                  className="text-sm text-accent hover:text-accent/80 font-medium transition-colors disabled:opacity-40"
-                >
-                  {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email'}
-                </button>
-                <div className="mt-6 pt-4 border-t border-white/5">
-                  <Link to="/login" className="text-sm text-white/30 hover:text-white/50 transition-colors">
-                    ← Back to Sign In
-                  </Link>
-                </div>
-              </motion.div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <AnimatePresence mode="wait">
-                  {step === 1 && (
-                    <motion.div
-                      key="step1"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ duration: 0.25 }}
-                      className="space-y-4"
-                    >
-                      <div>
-                        <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Email</label>
-                        <div className="relative group">
-                          <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
-                          <input
-                            type="email"
-                            value={form.email}
-                            onChange={(e) => update('email', e.target.value)}
-                            className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
-                            placeholder="you@example.com"
-                            required
-                            autoFocus
-                          />
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => canProceedStep1 && setStep(2)}
-                        disabled={!canProceedStep1}
-                        className="w-full h-12 rounded-xl font-bold text-[#050505] text-sm flex items-center justify-center gap-2 relative overflow-hidden disabled:opacity-25 disabled:cursor-not-allowed transition-opacity"
-                        style={{
-                          background: 'linear-gradient(135deg,#C8A827,#F5CC55,#C8A827)',
-                          boxShadow: canProceedStep1 ? '0 4px 20px rgba(212,175,55,0.3)' : 'none',
-                        }}
-                      >
-                        <motion.span
-                          className="absolute inset-0 bg-white/20"
-                          initial={{ x: '-100%' }}
-                          animate={{ x: '200%' }}
-                          transition={{ repeat: Infinity, duration: 2, ease: 'linear', delay: 1 }}
-                        />
-                        <span className="relative z-10 flex items-center gap-2">
-                          Continue <ChevronRight size={14} />
-                        </span>
-                      </button>
-                    </motion.div>
-                  )}
-
-                  {step === 2 && (
-                    <motion.div
-                      key="step2"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.25 }}
-                      className="space-y-3.5"
-                    >
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">First Name</label>
-                          <div className="relative group">
-                            <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
-                            <input
-                              value={form.firstName}
-                              onChange={(e) => update('firstName', e.target.value)}
-                              className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
-                              placeholder="Arjun"
-                              required
-                              autoFocus
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Last Name</label>
-                          <div className="relative group">
-                            <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
-                            <input
-                              value={form.lastName}
-                              onChange={(e) => update('lastName', e.target.value)}
-                              className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
-                              placeholder="Mehta"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Password</label>
-                        <div className="relative group">
-                          <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
-                          <input
-                            type={showPassword ? 'text' : 'password'}
-                            value={form.password}
-                            onChange={(e) => update('password', e.target.value)}
-                            className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-11"
-                            placeholder="Min. 8 characters"
-                            required
-                            minLength={8}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/15 hover:text-white/40 transition-colors"
-                          >
-                            {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                          </button>
-                        </div>
-                        <PasswordStrength password={form.password} />
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Confirm Password</label>
-                        <div className="relative group">
-                          <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
-                          <input
-                            type="password"
-                            value={form.confirmPassword}
-                            onChange={(e) => update('confirmPassword', e.target.value)}
-                            className="w-full h-12 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:bg-white/[0.06] focus:outline-none transition-all duration-300 pl-10 pr-4"
-                            placeholder="••••••••"
-                            required
-                          />
-                          {form.confirmPassword && form.password === form.confirmPassword && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.5 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="absolute right-3 top-1/2 -translate-y-1/2"
-                            >
-                              <Check size={14} className="text-green-400" />
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2.5 pt-1">
-                        <button
-                          type="button"
-                          onClick={() => setStep(1)}
-                          className="h-12 px-4 rounded-xl font-medium text-white/35 text-sm border border-white/[0.06] hover:bg-white/[0.03] hover:text-white/50 transition-all"
-                        >
-                          Back
-                        </button>
-                        <button
-                          type="submit"
-                          disabled={loading || !canProceedStep2}
-                          className="flex-1 h-12 rounded-xl font-bold text-[#050505] text-sm flex items-center justify-center gap-2 relative overflow-hidden disabled:opacity-25 disabled:cursor-not-allowed transition-opacity"
-                          style={{
-                            background: 'linear-gradient(135deg,#C8A827,#F5CC55,#C8A827)',
-                            boxShadow: canProceedStep2 ? '0 4px 20px rgba(212,175,55,0.3)' : 'none',
-                          }}
-                        >
-                          <motion.span
-                            className="absolute inset-0 bg-white/20"
-                            initial={{ x: '-100%' }}
-                            animate={{ x: '200%' }}
-                            transition={{ repeat: Infinity, duration: 2, ease: 'linear', delay: 1 }}
-                          />
-                          {loading ? (
-                            <span className="relative z-10 flex items-center gap-2">
-                              <span className="w-4 h-4 border-2 border-[#050505]/30 border-t-[#050505] rounded-full animate-spin" />
-                              Creating…
-                            </span>
-                          ) : (
-                            <span className="relative z-10 flex items-center gap-2">
-                              <Sparkles size={14} />
-                              Create Account
-                            </span>
-                          )}
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </form>
-            )}
-          </AnimatePresence>
+                <motion.span
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '200%' }}
+                  transition={{ repeat: Infinity, duration: 2, ease: 'linear', delay: 1 }}
+                />
+                {loading ? (
+                  <span className="relative z-10 flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-[#050505]/30 border-t-[#050505] rounded-full animate-spin" />
+                    Creating…
+                  </span>
+                ) : (
+                  <span className="relative z-10 flex items-center gap-2">
+                    <Sparkles size={14} />
+                    Create Account
+                  </span>
+                )}
+              </button>
+            </form>
+          )}
 
           {!emailSent && (
             <>

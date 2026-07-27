@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { NotFound } from '@/components/ui/ErrorBoundary';
 
 export default function NotFoundPage() {

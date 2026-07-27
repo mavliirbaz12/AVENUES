@@ -28,10 +28,7 @@ function OrderDetailModal({ order, onClose, onStatusChange }) {
     if (status === order.status) return;
     setSaving(true);
     try {
-      const token = localStorage.getItem('avenues_token');
-      await axios.put(`/api/orders/${order._id}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(`/api/orders/${order._id}/status`, { status });
       onStatusChange(order._id, status);
       toast.success('Order status updated!');
       onClose();
