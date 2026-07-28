@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Save, Loader } from 'lucide-react';
 import axios from 'axios';
+import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
 export default function AdminSettingsPage() {
@@ -39,8 +40,7 @@ export default function AdminSettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('avenues_token');
-      await axios.put('/api/settings', {
+      await api.put('/api/settings', {
         storeName: form.storeName,
         storeEmail: form.storeEmail,
         storePhone: form.storePhone,
@@ -50,7 +50,7 @@ export default function AdminSettingsPage() {
         expressShipping: Number(form.expressShipping) || 0,
         taxRate: Number(form.taxRate) || 0,
         currency: form.currency,
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       toast.success('Settings saved!');
     } catch {
       toast.error('Failed to save settings');
@@ -83,7 +83,7 @@ export default function AdminSettingsPage() {
             { label: 'Address', key: 'storeAddress', placeholder: 'Mumbai, Maharashtra, India' },
           ].map(({ label, key, placeholder, type }) => (
             <div key={key}>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1.5">{label}</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1.5">{label}</label>
               <input type={type || 'text'} value={form[key]} onChange={e => update(key, e.target.value)}
                 className="w-full h-11 rounded-xl text-sm text-white bg-white/[0.03] border border-white/[0.06] px-4 focus:outline-none focus:border-accent/40 transition-all"
                 placeholder={placeholder} />
@@ -103,7 +103,7 @@ export default function AdminSettingsPage() {
             { label: 'Express Shipping (₹)', key: 'expressShipping', placeholder: '99' },
           ].map(({ label, key, placeholder }) => (
             <div key={key}>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1.5">{label}</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1.5">{label}</label>
               <input type="number" value={form[key]} onChange={e => update(key, e.target.value)}
                 className="w-full h-11 rounded-xl text-sm text-white bg-white/[0.03] border border-white/[0.06] px-4 focus:outline-none focus:border-accent/40 transition-all"
                 placeholder={placeholder} />
@@ -118,13 +118,13 @@ export default function AdminSettingsPage() {
         <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-4">Payment</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1.5">Tax Rate (%)</label>
+            <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1.5">Tax Rate (%)</label>
             <input type="number" value={form.taxRate} onChange={e => update('taxRate', e.target.value)}
               className="w-full h-11 rounded-xl text-sm text-white bg-white/[0.03] border border-white/[0.06] px-4 focus:outline-none focus:border-accent/40 transition-all"
               placeholder="18" />
           </div>
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1.5">Currency</label>
+            <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1.5">Currency</label>
             <input value={form.currency} readOnly
               className="w-full h-11 rounded-xl text-sm text-white/50 bg-white/[0.02] border border-white/[0.04] px-4 cursor-not-allowed" />
           </div>

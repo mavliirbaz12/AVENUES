@@ -130,12 +130,12 @@ export default function MapPicker({ location, onLocationSelect, height = '280px'
       {address && (
         <div className="px-3 py-2 bg-[#111111] border-t border-white/5 flex items-center gap-2">
           <MapPin size={12} className="text-accent flex-shrink-0" />
-          <p className="text-[11px] text-white/50 truncate">{address}</p>
+          <p className="text-xs text-white/50 truncate">{address}</p>
         </div>
       )}
 
       <div className="px-3 py-2 bg-[#0a0a0a] border-t border-white/5">
-        <p className="text-[10px] text-white/25 text-center">Drag the map to adjust your exact location</p>
+        <p className="text-2xs text-white/25 text-center">Drag the map to adjust your exact location</p>
       </div>
     </div>
   );

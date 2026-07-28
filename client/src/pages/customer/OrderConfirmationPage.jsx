@@ -135,9 +135,9 @@ export default function OrderConfirmationPage() {
           <h1 className="font-display text-3xl font-bold mb-2">Order Confirmed!</h1>
           <p className="text-white/40 text-sm">Thank you for shopping with Avenues Perfume</p>
           <div className="mt-3 inline-block px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-            <span className="text-[10px] uppercase tracking-widest text-white/30">Order Number</span>
+            <span className="text-2xs uppercase tracking-widest text-white/30">Order Number</span>
             <p className="text-accent font-bold text-sm mt-0.5">{order.orderNumber}</p>
-            <span className="text-[10px] uppercase tracking-widest text-white/30 block mt-1">Placed On</span>
+            <span className="text-2xs uppercase tracking-widest text-white/30 block mt-1">Placed On</span>
             <p className="text-white text-xs mt-0.5">{new Date(order.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
           </div>
         </motion.div>
@@ -154,10 +154,10 @@ export default function OrderConfirmationPage() {
               const isCurrent = idx === currentIdx;
               return (
                 <div key={step.key} className="flex flex-col items-center relative z-20">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 transition-all ${isCompleted ? 'bg-accent border-accent text-[#050505]' : 'bg-[#111111] border-white/10 text-white/20'} ${isCurrent ? 'ring-2 ring-accent/30' : ''}`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-2xs font-bold border-2 transition-all ${isCompleted ? 'bg-accent border-accent text-[#050505]' : 'bg-[#111111] border-white/10 text-white/20'} ${isCurrent ? 'ring-2 ring-accent/30' : ''}`}>
                     {isCompleted ? <CheckCircle size={12} /> : idx + 1}
                   </div>
-                  <span className={`text-[9px] mt-1.5 text-center max-w-[60px] leading-tight ${isCompleted ? 'text-accent font-semibold' : 'text-white/20'}`}>{step.label}</span>
+                  <span className={`text-2xs mt-1.5 text-center max-w-[60px] leading-tight ${isCompleted ? 'text-accent font-semibold' : 'text-white/20'}`}>{step.label}</span>
                 </div>
               );
             })}

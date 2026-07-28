@@ -136,12 +136,12 @@ export default function DashboardPage() {
                     <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: STATUS_COLORS[o.status] || '#666' }} />
                     <div>
                       <p className="text-xs font-mono text-white/70">{o.id}</p>
-                      <p className="text-[10px] text-white/30">{o.customer}</p>
+                      <p className="text-2xs text-white/30">{o.customer}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-semibold text-white">₹{(o.total || 0).toLocaleString('en-IN')}</p>
-                    <p className={`text-[9px] font-semibold uppercase`}>{o.status}</p>
+                    <p className={`text-2xs font-semibold uppercase`}>{o.status}</p>
                   </div>
                 </div>
               ))}
@@ -169,7 +169,7 @@ export default function DashboardPage() {
               </ResponsiveContainer>
               <div className="space-y-1.5 mt-3">
                 {orderStatus.filter(s => s.count > 0).map((s, i) => (
-                  <div key={i} className="flex items-center justify-between text-[11px]">
+                  <div key={i} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }} />
                       <span className="text-white/50 capitalize">{s.status.replace('_', ' ')}</span>

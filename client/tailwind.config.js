@@ -75,6 +75,32 @@ export default {
         body: ['Inter', 'system-ui', 'sans-serif'],
         accent: ['Quicksand', 'sans-serif'],
       },
+      fontSize: {
+        '2xs': ['0.625rem', { lineHeight: '1rem' }],      // 10px — micro labels, badges
+        'xs':  ['0.75rem',  { lineHeight: '1.25rem' }],   // 12px — captions, meta
+        'sm':  ['0.875rem', { lineHeight: '1.375rem' }],  // 14px — secondary body
+        'base':['1rem',     { lineHeight: '1.7' }],       // 16px — body text
+        'lg':  ['1.125rem', { lineHeight: '1.75rem' }],   // 18px — lead text
+        'xl':  ['1.25rem',  { lineHeight: '1.75rem' }],   // 20px — subheadings
+        '2xl': ['1.5rem',   { lineHeight: '1.4' }],       // 24px — card titles
+        '3xl': ['1.875rem', { lineHeight: '1.3' }],       // 30px — section titles
+        '4xl': ['2.25rem',  { lineHeight: '1.2' }],       // 36px — page headings
+        '5xl': ['3rem',     { lineHeight: '1.15' }],      // 48px — hero subhead
+        '6xl': ['3.75rem',  { lineHeight: '1.1' }],       // 60px — hero
+        '7xl': ['4.5rem',   { lineHeight: '1.08' }],      // 72px — display
+        '8xl': ['6rem',     { lineHeight: '1.05' }],      // 96px — large display
+      },
+      letterSpacing: {
+        tightest: '-0.04em',
+        tighter:  '-0.02em',
+        tight:    '-0.01em',
+        normal:   '0em',
+        wide:     '0.025em',
+        wider:    '0.05em',
+        widest:   '0.1em',
+        label:    '0.2em',   // uppercase UI labels
+        marquee:  '0.25em',  // trust bar / marquee text
+      },
       borderRadius: {
         btn: '8px',
         card: '12px',

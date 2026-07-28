@@ -23,7 +23,7 @@ function InputField({ label, type = 'text', value, onChange, placeholder, icon: 
   const isPass = type === 'password';
   return (
     <div className="w-full">
-      <label className="block text-[11px] font-semibold uppercase tracking-wider text-white/40 mb-1.5">
+      <label className="block text-xs font-semibold uppercase tracking-wider text-white/40 mb-1.5">
         {label}
       </label>
       <div className="relative">
@@ -280,7 +280,7 @@ export default function AuthModal() {
       {/* Divider */}
       <div className="flex items-center gap-3 my-4">
         <div className="flex-1 h-px bg-white/8" />
-        <span className="text-white/25 text-[11px]">or</span>
+        <span className="text-white/25 text-xs">or</span>
         <div className="flex-1 h-px bg-white/8" />
       </div>
 
@@ -293,7 +293,7 @@ export default function AuthModal() {
       </p>
 
       {!isLogin && (
-        <p className="text-center text-[10px] text-white/20 mt-3 leading-relaxed">
+        <p className="text-center text-2xs text-white/20 mt-3 leading-relaxed">
           By creating an account you agree to our Privacy Policy &amp; Terms
         </p>
       )}

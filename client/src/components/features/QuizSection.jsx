@@ -78,7 +78,7 @@ export default function QuizSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-accent text-[10px] font-bold tracking-[0.3em] uppercase mb-2"
+            className="text-accent text-2xs font-bold tracking-marquee uppercase mb-2"
           >
             Your scent matches you
           </motion.p>
@@ -113,7 +113,7 @@ export default function QuizSection() {
             </div>
 
             {/* Product Info */}
-            <p className="text-accent text-[10px] font-bold tracking-[0.25em] uppercase mb-1.5">
+            <p className="text-accent text-2xs font-bold tracking-marquee uppercase mb-1.5">
               {resultProduct.categoryLabel}
             </p>
             <h3 className="font-display text-2xl sm:text-3xl text-white font-bold mb-1">
@@ -152,7 +152,7 @@ export default function QuizSection() {
               {resultProduct.pricing.discount > 0 && (
                 <>
                   <span className="text-white/30 line-through text-sm">₹{resultProduct.pricing.mrp}</span>
-                  <span className="bg-accent/15 text-accent text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                  <span className="bg-accent/15 text-accent text-2xs font-bold px-2 py-0.5 rounded-full uppercase">
                     {resultProduct.pricing.discount}% off
                   </span>
                 </>

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, Sparkles, ArrowRight } from 'lucide-react';
 import useAuthStore from '@/store/authStore';
 import toast from 'react-hot-toast';
@@ -14,7 +14,29 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
+
+  // Handle Google OAuth redirect — token & user are passed as URL params
+  useEffect(() => {
+    const token = searchParams.get('token');
+    const userParam = searchParams.get('user');
+    const oauthError = searchParams.get('error');
+    if (oauthError) {
+      setError('Google sign-in failed. Please try again or use email.');
+      return;
+    }
+    if (token && userParam) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userParam));
+        login(user, token);
+        toast.success(`Welcome, ${user.firstName}!`);
+        navigate(user.role === 'admin' ? '/admin' : '/');
+      } catch {
+        setError('Google sign-in failed. Please try again.');
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,13 +103,13 @@ export default function LoginPage() {
               <p className="text-white/55 text-xs leading-relaxed">
                 "Avenues changed how I think about fragrance. The quiz nailed my personality in 60 seconds."
               </p>
-              <p className="text-white/35 text-[10px] mt-2">— Rahul M., Mumbai</p>
+              <p className="text-white/35 text-2xs mt-2">— Rahul M., Mumbai</p>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
               <p className="text-white/55 text-xs leading-relaxed">
                 "Finally a brand that gets it. No more generic perfume ads — just scent that speaks."
               </p>
-              <p className="text-white/35 text-[10px] mt-2">— Priya K., Delhi</p>
+              <p className="text-white/35 text-2xs mt-2">— Priya K., Delhi</p>
             </div>
           </div>
         </div>
@@ -125,7 +147,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Email</label>
+              <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">Email</label>
               <div className="relative group">
                 <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
 <input
@@ -141,7 +163,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Password</label>
+              <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">Password</label>
               <div className="relative group">
                 <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
                 <input
@@ -194,7 +216,7 @@ export default function LoginPage() {
 
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-white/5" />
-            <span className="text-white/12 text-[10px]">or</span>
+            <span className="text-white/12 text-2xs">or</span>
             <div className="flex-1 h-px bg-white/5" />
           </div>
 

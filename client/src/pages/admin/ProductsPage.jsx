@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Edit, Trash2, X, RefreshCw, Upload, Link as LinkIcon, Loader, ChevronDown } from 'lucide-react';
 import { formatCurrency, cn } from '@/lib/utils';
 import axios from 'axios';
+import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
 const EMPTY_FORM = {
@@ -222,10 +223,10 @@ function ProductModal({ product, onClose, onSave }) {
       };
 
       if (isEdit) {
-        await axios.put(`/api/products/${product._id}`, payload, { headers: { Authorization: `Bearer ${localStorage.getItem('avenues_token')}` } });
+        await api.put(`/api/products/${product._id}`, payload);
         toast.success('Product updated!');
       } else {
-        await axios.post('/api/products', payload, { headers: { Authorization: `Bearer ${localStorage.getItem('avenues_token')}` } });
+        await api.post('/api/products', payload);
         toast.success('Product added to database!');
       }
       onSave();
@@ -272,7 +273,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: Basic Info ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Basic Info</p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">Basic Info</p>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -313,7 +314,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: Descriptions ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Descriptions</p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">Descriptions</p>
             <div className="space-y-3">
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Short Description <span className="text-white/30 text-xs">(1-2 sentences — shown on cards and PDP)</span></label>
@@ -332,7 +333,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: Pricing ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Pricing & Stock</p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">Pricing & Stock</p>
             <div className="grid grid-cols-3 gap-3 mb-3">
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">MRP (₹)</label>
@@ -367,7 +368,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: Fragrance ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Fragrance Notes <span className="text-white/30 text-xs">(Type and press Enter to add each note as a chip)</span></p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">Fragrance Notes <span className="text-white/30 text-xs">(Type and press Enter to add each note as a chip)</span></p>
             <div className="space-y-3">
               <TagChipInput label="Top Notes" value={form.topNotes} onChange={v => setForm({ ...form, topNotes: v })} placeholder="Bergamot, Lavender, Citrus" />
               <TagChipInput label="Heart Notes" value={form.heartNotes} onChange={v => setForm({ ...form, heartNotes: v })} placeholder="Orange Blossom, Geranium, Rose" />
@@ -408,7 +409,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: Benefits ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Benefits <span className="text-white/30 text-xs">(Write 4-5 punchy benefit lines. Mix facts with personality.)</span></p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">Benefits <span className="text-white/30 text-xs">(Write 4-5 punchy benefit lines. Mix facts with personality.)</span></p>
             <div className="space-y-2">
               {form.benefits.map((b, i) => (
                 <div key={i} className="flex gap-2">
@@ -426,7 +427,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: FAQs ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">FAQs <span className="text-white/30 text-xs">(Write 3-4 Q&As customers actually ask)</span></p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">FAQs <span className="text-white/30 text-xs">(Write 3-4 Q&As customers actually ask)</span></p>
             <div className="space-y-3">
               {form.faqs.map((faq, i) => (
                 <div key={i} className="bg-[#0A0A0A] border border-white/10 rounded-lg p-3 space-y-2">
@@ -449,7 +450,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: Details ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Details</p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">Details</p>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -475,7 +476,7 @@ function ProductModal({ product, onClose, onSave }) {
 
           {/* ── SECTION: Media ── */}
           <div>
-            <p className="text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Media & Tags</p>
+            <p className="text-accent text-2xs font-bold tracking-label uppercase mb-3">Media & Tags</p>
             <div className="space-y-3">
               <TagChipInput label="Tags" value={form.tags} onChange={v => setForm({ ...form, tags: v })} placeholder="Sweet, Spicy, Warm" />
               <div>
@@ -557,7 +558,7 @@ export default function AdminProductsPage() {
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Delete "${name}" from the database?`)) return;
     try {
-      await axios.delete(`/api/products/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('avenues_token')}` } });
+      await api.delete(`/api/products/${id}`);
       setProducts(products.filter(p => p._id !== id));
       toast.success('Product deleted');
     } catch {
@@ -634,7 +635,7 @@ export default function AdminProductsPage() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
                         <p className="font-bold text-white">₹{(product.pricing?.sellingPrice || 0).toLocaleString('en-IN')}</p>
-                        {discount > 0 && <span className="text-[10px] bg-green-500/15 text-green-400 px-1.5 py-0.5 rounded-full">{discount}% OFF</span>}
+                        {discount > 0 && <span className="text-2xs bg-green-500/15 text-green-400 px-1.5 py-0.5 rounded-full">{discount}% OFF</span>}
                       </div>
                       {product.pricing?.mrp > product.pricing?.sellingPrice && (
                         <p className="text-xs text-white/30 line-through">₹{(product.pricing.mrp).toLocaleString('en-IN')}</p>

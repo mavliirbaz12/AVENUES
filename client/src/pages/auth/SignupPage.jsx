@@ -43,7 +43,7 @@ function PasswordStrength({ password }) {
           </div>
         ))}
       </div>
-      <p className="text-[10px] text-white/30 mt-1">{strength > 0 ? labels[strength - 1] : 'Enter a password'}</p>
+      <p className="text-2xs text-white/30 mt-1">{strength > 0 ? labels[strength - 1] : 'Enter a password'}</p>
     </div>
   );
 }
@@ -175,7 +175,7 @@ export default function SignupPage() {
                     <Star key={i} size={10} className="text-accent fill-accent" />
                   ))}
                 </div>
-                <p className="text-[10px] text-white/35 mt-0.5">2,847 happy members</p>
+                <p className="text-2xs text-white/35 mt-0.5">2,847 happy members</p>
               </div>
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function SignupPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">First Name</label>
+                  <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">First Name</label>
                   <div className="relative group">
                     <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
                     <input
@@ -262,7 +262,7 @@ export default function SignupPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Last Name</label>
+                  <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">Last Name</label>
                   <div className="relative group">
                     <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
                     <input
@@ -276,7 +276,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Email</label>
+                <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">Email</label>
                 <div className="relative group">
                   <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
                   <input
@@ -291,7 +291,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Password</label>
+                <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">Password</label>
                 <div className="relative group">
                   <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
                   <input
@@ -315,7 +315,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">Confirm Password</label>
+                <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">Confirm Password</label>
                 <div className="relative group">
                   <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/15 group-focus-within:text-accent/50 transition-colors pointer-events-none" />
                   <input
@@ -370,13 +370,13 @@ export default function SignupPage() {
 
           {!emailSent && (
             <>
-              <p className="text-center text-[10px] text-white/12 mt-5">
+              <p className="text-center text-2xs text-white/12 mt-5">
                 By continuing you agree to our Privacy Policy &amp; Terms
               </p>
 
               <div className="flex items-center gap-3 my-5">
                 <div className="flex-1 h-px bg-white/5" />
-                <span className="text-white/12 text-[10px]">or</span>
+                <span className="text-white/12 text-2xs">or</span>
                 <div className="flex-1 h-px bg-white/5" />
               </div>
 

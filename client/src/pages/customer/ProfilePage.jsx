@@ -6,9 +6,13 @@ import {
   X, Check, Package, Clock, Truck, CheckCircle, Building2, Home, MessageCircle, Camera, Lock, Search
 } from 'lucide-react';
 import useAuthStore from '@/store/authStore';
+import useCartStore from '@/store/cartStore';
+import useUIStore from '@/store/uiStore';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '@/lib/api';
+import axios from 'axios'; // keep for pincode (unauthenticated external call)
 import { Helmet } from 'react-helmet-async';
+import { INDIAN_STATES } from '@/lib/constants';
 
 const MapPicker = lazy(() => import('@/components/features/MapPicker'));
 
@@ -46,7 +50,7 @@ function ProfileTab({ user, onSave }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await axios.put('/api/users/profile', form);
+      const { data } = await api.put('/api/users/profile', form);
       onSave(data);
       toast.success('Profile updated!');
     } catch (err) {
@@ -75,7 +79,7 @@ function ProfileTab({ user, onSave }) {
     }
     setPasswordLoading(true);
     try {
-      await axios.put('/api/users/change-password', { currentPassword: passwordData.currentPassword, newPassword: passwordData.newPassword });
+      await api.put('/api/users/change-password', { currentPassword: passwordData.currentPassword, newPassword: passwordData.newPassword });
       toast.success('Password updated!');
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       setShowPasswordForm(false);
@@ -93,7 +97,7 @@ function ProfileTab({ user, onSave }) {
     try {
       const fd = new FormData();
       fd.append('avatar', file);
-      const { data } = await axios.post('/api/upload/avatar', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const { data } = await api.post('/api/upload/avatar', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       onSave({ ...user, avatarUrl: data.url });
       toast.success('Avatar updated!');
     } catch {
@@ -147,18 +151,21 @@ function ProfileTab({ user, onSave }) {
                 { label: 'Phone', key: 'phone', placeholder: '+91 98765 43210' },
               ].map(({ label, key, placeholder, readonly }) => (
                 <div key={key}>
-                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1.5">{label}</label>
+                  <label className="block text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5">{label}</label>
                   <input
                     value={form[key]}
                     onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                     readOnly={readonly}
-                    className="w-full h-11 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:outline-none transition-all px-4 disabled:opacity-40"
+                    className={`w-full h-11 rounded-xl text-sm text-white placeholder-white/15 bg-white/[0.03] border border-white/[0.06] focus:border-accent/40 focus:outline-none transition-all px-4 ${readonly ? 'cursor-not-allowed opacity-60 select-none' : ''}`}
                     placeholder={placeholder}
                   />
+                  {key === 'email' && readonly && (
+                    <p className="text-2xs text-white/25 mt-1">Your email is tied to your account and cannot be changed. Contact support if needed.</p>
+                  )}
                   {key === 'email' && (
                     <div className="flex items-center gap-2 mt-1.5">
                       {user?.isEmailVerified ? (
-                        <span className="text-[10px] text-green-400 flex items-center gap-1">
+                        <span className="text-2xs text-green-400 flex items-center gap-1">
                           <Check size={10} /> Verified
                         </span>
                       ) : (
@@ -166,12 +173,12 @@ function ProfileTab({ user, onSave }) {
                           type="button"
                           onClick={handleResendVerification}
                           disabled={resendCooldown > 0}
-                          className="text-[10px] text-yellow-400 hover:text-yellow-300 flex items-center gap-1 disabled:opacity-40 transition-colors"
+                          className="text-2xs text-yellow-400 hover:text-yellow-300 flex items-center gap-1 disabled:opacity-40 transition-colors"
                         >
                           ⚠ Not verified — {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend email'}
                         </button>
                       )}
-                      <span className="text-[9px] text-white/20 ml-2">Email is tied to your account identity and cannot be changed.</span>
+                      <span className="text-2xs text-white/20 ml-2">Email is tied to your account identity and cannot be changed.</span>
                     </div>
                   )}
                 </div>
@@ -202,16 +209,16 @@ function ProfileTab({ user, onSave }) {
           {showPasswordForm && (
             <form onSubmit={handleChangePassword} className="space-y-3">
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Current Password</label>
+                <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Current Password</label>
                 <input type="password" value={passwordData.currentPassword} onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" required />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">New Password</label>
+                  <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">New Password</label>
                   <input type="password" value={passwordData.newPassword} onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" required minLength={8} />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Confirm New Password</label>
+                  <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Confirm New Password</label>
                   <input type="password" value={passwordData.confirmPassword} onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" required />
                 </div>
               </div>
@@ -239,7 +246,7 @@ function ProfileTab({ user, onSave }) {
               <label key={key} className="flex items-center justify-between cursor-pointer">
                 <div>
                   <p className="text-sm text-white">{label}</p>
-                  <p className="text-[10px] text-white/30">{desc}</p>
+                  <p className="text-2xs text-white/30">{desc}</p>
                 </div>
                 <div className="w-10 h-6 rounded-full bg-white/10 relative transition-colors" style={{ backgroundColor: user?.[key] !== false ? '#D4AF37' : 'rgba(255,255,255,0.1)' }}>
                   <div className="w-4 h-4 rounded-full bg-white absolute top-1 transition-transform" style={{ left: user?.[key] !== false ? '1.5rem' : '0.25rem' }} />
@@ -253,6 +260,42 @@ function ProfileTab({ user, onSave }) {
   );
 }
 
+function ReorderButton({ items }) {
+  const addItem = useCartStore((s) => s.addItem);
+  const openCart = useCartStore((s) => s.openCart);
+  const addToast = useUIStore((s) => s.addToast);
+
+  const handleReorder = async () => {
+    if (!items?.length) return;
+    try {
+      const productIds = items.map((i) => i.product);
+      const { data: allProducts } = await axios.get('/api/products');
+      let added = 0;
+      items.forEach((item) => {
+        const product = allProducts.find((p) => p._id === item.product || p.id === item.product);
+        if (product) { addItem(product, item.quantity || 1); added++; }
+      });
+      if (added > 0) {
+        openCart();
+        addToast({ type: 'success', message: `${added} item(s) added to cart!` });
+      } else {
+        addToast({ type: 'info', message: 'Some items may no longer be available.' });
+      }
+    } catch {
+      toast.error('Could not reorder. Please try again.');
+    }
+  };
+
+  return (
+    <button
+      onClick={handleReorder}
+      className="text-2xs font-bold px-3 py-1.5 rounded-full bg-accent/10 border border-accent/25 text-accent hover:bg-accent hover:text-[#050505] transition-all duration-200 flex items-center gap-1.5"
+    >
+      <ShoppingBag size={10} /> Reorder
+    </button>
+  );
+}
+
 function OrdersTab() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -262,8 +305,7 @@ function OrdersTab() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('avenues_token');
-        const { data } = await axios.get('/api/users/orders', { headers: { Authorization: `Bearer ${token}` } });
+        const { data } = await api.get('/api/users/orders');
         setOrders(data);
       } catch { /* no orders yet */ }
       finally { setLoading(false); }
@@ -299,14 +341,17 @@ function OrdersTab() {
             placeholder="Search order # or ID"
           />
         </div>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40">
-          <option value="all">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="processing">Processing</option>
-          <option value="shipped">Shipped</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+        <div className="flex gap-1.5 flex-wrap">
+          {['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`text-2xs font-semibold capitalize px-3 py-1.5 rounded-full border transition-all ${statusFilter === s ? 'bg-accent text-[#050505] border-accent' : 'text-white/40 border-white/[0.06] hover:border-white/20 hover:text-white/60'}`}
+            >
+              {s === 'all' ? 'All' : s.replace('_', ' ')}
+            </button>
+          ))}
+        </div>
       </div>
 
       {filtered.length === 0 && (
@@ -327,11 +372,11 @@ function OrdersTab() {
                 <StatusIcon size={16} className={STATUS_COLORS[order.status]} />
                 <div>
                   <p className="text-sm font-semibold text-white">{order.orderNumber || `#${order._id.slice(-6).toUpperCase()}`}</p>
-                  <p className="text-[10px] text-white/25">{orderDate} • {order.orderItems?.length || 0} item(s)</p>
+                  <p className="text-2xs text-white/25">{orderDate} • {order.orderItems?.length || 0} item(s)</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${order.status === 'delivered' ? 'bg-green-400/10 text-green-400' : order.status === 'cancelled' ? 'bg-red-400/10 text-red-400' : 'bg-accent/10 text-accent'}`}>
+                <span className={`text-2xs font-semibold uppercase px-2 py-0.5 rounded-full ${order.status === 'delivered' ? 'bg-green-400/10 text-green-400' : order.status === 'cancelled' ? 'bg-red-400/10 text-red-400' : 'bg-accent/10 text-accent'}`}>
                   {order.status}
                 </span>
                 <span className="text-sm font-bold text-white">₹{(order.totalPrice || 0).toLocaleString('en-IN')}</span>
@@ -349,7 +394,7 @@ function OrdersTab() {
                       <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold ${done ? 'bg-accent text-[#050505]' : 'bg-white/[0.03] text-white/20 border border-white/[0.06]'}`}>
                         <Icon size={10} />
                       </div>
-                      <span className={`text-[9px] capitalize ${done ? 'text-accent' : 'text-white/20'}`}>{s.replace('_', ' ')}</span>
+                      <span className={`text-2xs capitalize ${done ? 'text-accent' : 'text-white/20'}`}>{s.replace('_', ' ')}</span>
                       {i < 5 && <div className={`w-6 h-px mx-0.5 ${done ? 'bg-accent' : 'bg-white/[0.06]'}`} />}
                     </div>
                   );
@@ -360,7 +405,7 @@ function OrdersTab() {
               {timeline.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {timeline.map((t, i) => (
-                    <span key={i} className="text-[9px] text-white/30 bg-white/[0.03] px-2 py-0.5 rounded-full">
+                    <span key={i} className="text-2xs text-white/30 bg-white/[0.03] px-2 py-0.5 rounded-full">
                       {t.status.replace('_', ' ')} — {new Date(t.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     </span>
                   ))}
@@ -376,14 +421,14 @@ function OrdersTab() {
                     <span className="text-lg">🧴</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-white truncate">{item.name}</p>
-                      <p className="text-[10px] text-white/25">Qty: {item.quantity} × ₹{item.price?.toLocaleString('en-IN')}</p>
+                      <p className="text-2xs text-white/25">Qty: {item.quantity} × ₹{item.price?.toLocaleString('en-IN')}</p>
                     </div>
                     <p className="text-xs font-semibold text-white flex-shrink-0">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-[10px]">
+              <div className="grid grid-cols-2 gap-3 text-2xs">
                 <div className="space-y-1.5">
                   <p className="text-white/25 uppercase tracking-widest font-semibold">Shipping</p>
                   <p className="text-white text-xs">{order.shippingAddress?.street || '—'}, {order.shippingAddress?.city || ''}</p>
@@ -399,10 +444,15 @@ function OrdersTab() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1 flex-wrap">
-                <span className="text-[9px] px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/40 capitalize">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Razorpay'}</span>
-                {order.paymentResult?.razorpayPaymentId && <span className="text-[9px] px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/25 font-mono">Paid ✓</span>}
-                <a href={`/api/users/orders/${order._id}/invoice`} target="_blank" rel="noopener noreferrer" className="text-[9px] px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/40 hover:text-accent transition-colors">Download Invoice</a>
+              <div className="flex items-center gap-2 pt-1 flex-wrap justify-between">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-2xs px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/40 capitalize">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Razorpay'}</span>
+                  {order.paymentResult?.razorpayPaymentId && <span className="text-2xs px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/25 font-mono">Paid ✓</span>}
+                  <a href={`/api/users/orders/${order._id}/invoice`} target="_blank" rel="noopener noreferrer" className="text-2xs px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/40 hover:text-accent transition-colors">Download Invoice</a>
+                </div>
+                {order.status === 'delivered' && (
+                  <ReorderButton items={order.orderItems} />
+                )}
               </div>
             </div>
           </div>
@@ -439,13 +489,12 @@ function AddressesTab({ user, onUpdate }) {
     }
     setLoading(true);
     try {
-      const token = localStorage.getItem('avenues_token');
       let data;
       if (editing) {
-        const res = await axios.put(`/api/users/addresses/${editing}`, form, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await api.put(`/api/users/addresses/${editing}`, form);
         data = res.data;
       } else {
-        const res = await axios.post('/api/users/addresses', form, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await api.post('/api/users/addresses', form);
         data = res.data;
       }
       onUpdate({ ...user, addresses: data });
@@ -460,8 +509,7 @@ function AddressesTab({ user, onUpdate }) {
 
   const handleDelete = async (id) => {
     try {
-      const token = localStorage.getItem('avenues_token');
-      const { data } = await axios.delete(`/api/users/addresses/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await api.delete(`/api/users/addresses/${id}`);
       onUpdate({ ...user, addresses: data });
       toast.success('Address removed');
     } catch { toast.error('Failed to delete'); }
@@ -491,7 +539,7 @@ function AddressesTab({ user, onUpdate }) {
                       <div className="flex items-center gap-2 mb-1">
                         {addr.label === 'Home' ? <Home size={12} className="text-white/40" /> : <Building2 size={12} className="text-white/40" />}
                         <span className="text-xs font-semibold text-white">{addr.label}</span>
-                        {addr.isDefault && <span className="text-[9px] bg-accent/15 text-accent px-1.5 py-0.5 rounded-full font-bold">DEFAULT</span>}
+                        {addr.isDefault && <span className="text-2xs bg-accent/15 text-accent px-1.5 py-0.5 rounded-full font-bold">DEFAULT</span>}
                       </div>
                       <p className="text-sm text-white/50">{addr.fullName} • {addr.phone}</p>
                       {addr.buildingName && <p className="text-xs text-white/30 mt-0.5">🏢 {addr.buildingName}{addr.flatRoomNumber ? `, ${addr.flatRoomNumber}` : ''}</p>}
@@ -499,8 +547,8 @@ function AddressesTab({ user, onUpdate }) {
                       <p className="text-xs text-white/30">{addr.city}, {addr.state} {addr.postalCode}</p>
                       {addr.landmark && <p className="text-xs text-white/20 mt-1">📍 {addr.landmark}</p>}
                       <div className="flex items-center gap-3 mt-1.5">
-                        {addr.whatsappUpdates !== false && <span className="text-[9px] text-green-400 flex items-center gap-0.5"><MessageCircle size={8} /> WhatsApp</span>}
-                        {addr.deliveryPreferences?.preferredTime && addr.deliveryPreferences.preferredTime !== 'anytime' && <span className="text-[9px] text-white/25 flex items-center gap-0.5"><Clock size={8} /> {addr.deliveryPreferences.preferredTime}</span>}
+                        {addr.whatsappUpdates !== false && <span className="text-2xs text-green-400 flex items-center gap-0.5"><MessageCircle size={8} /> WhatsApp</span>}
+                        {addr.deliveryPreferences?.preferredTime && addr.deliveryPreferences.preferredTime !== 'anytime' && <span className="text-2xs text-white/25 flex items-center gap-0.5"><Clock size={8} /> {addr.deliveryPreferences.preferredTime}</span>}
                       </div>
                     </div>
                     <div className="flex gap-1">
@@ -527,7 +575,7 @@ function AddressesTab({ user, onUpdate }) {
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Label</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Label</label>
               <select value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40">
                 <option value="Home">🏠 Home</option>
                 <option value="Work">🏢 Work / Office</option>
@@ -535,50 +583,50 @@ function AddressesTab({ user, onUpdate }) {
               </select>
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Full Name *</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Full Name *</label>
               <input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Arjun Mehta" required />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Phone *</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Phone *</label>
               <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="+91 98765 43210" required />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Alternative Phone (optional)</label>
+            <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Alternative Phone (optional)</label>
             <input value={form.alternativePhone || ''} onChange={(e) => setForm({ ...form, alternativePhone: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="+91 98765 43210" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Building / Society Name</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Building / Society Name</label>
               <input value={form.buildingName || ''} onChange={(e) => setForm({ ...form, buildingName: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Prestige Towers" />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Flat / Room No.</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Flat / Room No.</label>
               <input value={form.flatRoomNumber || ''} onChange={(e) => setForm({ ...form, flatRoomNumber: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="B-402" />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Street Address *</label>
+            <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Street Address *</label>
             <input value={form.street} onChange={(e) => setForm({ ...form, street: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="123, MG Road" required />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Area / Locality</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Area / Locality</label>
               <input value={form.area || ''} onChange={(e) => setForm({ ...form, area: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Bandra West" />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Landmark</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Landmark</label>
               <input value={form.landmark || ''} onChange={(e) => setForm({ ...form, landmark: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Near Starbucks" />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Pincode *</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Pincode *</label>
               <input
                 value={form.postalCode}
                 onChange={(e) => {
@@ -593,17 +641,22 @@ function AddressesTab({ user, onUpdate }) {
               />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">City *</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">City *</label>
               <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Mumbai" required />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">State *</label>
-              <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Maharashtra" required />
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">State *</label>
+              <select value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-[#111] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" required>
+                <option value="">Select state</option>
+                {INDIAN_STATES.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1.5 flex items-center gap-1">
+            <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1.5 flex items-center gap-1">
               <MapPin size={10} /> Pin your exact location on map
             </label>
             <Suspense fallback={<div className="h-[280px] bg-white/[0.03] rounded-xl animate-pulse flex items-center justify-center text-white/20 text-xs">Loading map…</div>}>
@@ -619,7 +672,7 @@ function AddressesTab({ user, onUpdate }) {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Preferred Time</label>
+                <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Preferred Time</label>
                 <select
                   value={form.deliveryPreferences?.preferredTime || 'anytime'}
                   onChange={(e) => setForm({ ...form, deliveryPreferences: { ...form.deliveryPreferences, preferredTime: e.target.value } })}
@@ -632,7 +685,7 @@ function AddressesTab({ user, onUpdate }) {
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Best Time to Call</label>
+                <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Best Time to Call</label>
                 <input
                   value={form.deliveryPreferences?.bestTimeToCall || ''}
                   onChange={(e) => setForm({ ...form, deliveryPreferences: { ...form.deliveryPreferences, bestTimeToCall: e.target.value } })}
@@ -656,7 +709,7 @@ function AddressesTab({ user, onUpdate }) {
             )}
 
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Delivery Instructions</label>
+              <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Delivery Instructions</label>
               <textarea
                 value={form.deliveryPreferences?.deliveryInstructions || ''}
                 onChange={(e) => setForm({ ...form, deliveryPreferences: { ...form.deliveryPreferences, deliveryInstructions: e.target.value } })}
@@ -721,7 +774,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">{user?.firstName || 'User'} {user?.lastName || ''}</p>
-                <p className="text-[10px] text-white/25">{user?.email || ''}</p>
+                <p className="text-2xs text-white/25">{user?.email || ''}</p>
               </div>
             </div>
             <nav className="space-y-0.5">
@@ -731,6 +784,9 @@ export default function ProfilePage() {
                   {item.name}
                 </Link>
               ))}
+              <Link to="/wishlist" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/40 hover:text-white/60 hover:bg-white/[0.03] transition-all">
+                <Heart size={16} /> Wishlist
+              </Link>
               <button onClick={() => { logout(); window.location.href = '/'; }} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-white/30 hover:text-red-400 hover:bg-red-500/5 transition-all mt-2 border-t border-white/5 pt-3">
                 <LogOut size={16} /> Sign Out
               </button>

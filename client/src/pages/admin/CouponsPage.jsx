@@ -170,8 +170,8 @@ export default function AdminCouponsPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-white font-mono">{coupon.code}</span>
-                      {coupon.isAutoApply && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-400/10 text-purple-400 font-semibold">AUTO</span>}
-                      {!coupon.isActive && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-red-400/10 text-red-400 font-semibold">INACTIVE</span>}
+                      {coupon.isAutoApply && <span className="text-2xs px-1.5 py-0.5 rounded-full bg-purple-400/10 text-purple-400 font-semibold">AUTO</span>}
+                      {!coupon.isActive && <span className="text-2xs px-1.5 py-0.5 rounded-full bg-red-400/10 text-red-400 font-semibold">INACTIVE</span>}
                     </div>
                     <p className="text-xs text-white/40 mt-0.5">
                       {coupon.type === 'percentage' ? `${coupon.value}% off` : `₹${coupon.value} off`}
@@ -179,7 +179,7 @@ export default function AdminCouponsPage() {
                       {coupon.maxDiscount > 0 && ` • Max ₹${coupon.maxDiscount}`}
                       {coupon.usageLimit > 0 && ` • ${coupon.usedCount}/${coupon.usageLimit} used`}
                     </p>
-                    {coupon.description && <p className="text-[10px] text-white/25 mt-0.5">{coupon.description}</p>}
+                    {coupon.description && <p className="text-2xs text-white/25 mt-0.5">{coupon.description}</p>}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -209,11 +209,11 @@ export default function AdminCouponsPage() {
                 {/* Code + Type */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Coupon Code *</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Coupon Code *</label>
                     <input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40 uppercase font-mono" placeholder="SUMMER20" />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Type *</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Type *</label>
                     <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40">
                       <option value="percentage">% Percentage</option>
                       <option value="flat">₹ Flat Amount</option>
@@ -224,11 +224,11 @@ export default function AdminCouponsPage() {
                 {/* Value + Min Order */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">{form.type === 'percentage' ? 'Percentage Off *' : 'Amount Off *'}</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">{form.type === 'percentage' ? 'Percentage Off *' : 'Amount Off *'}</label>
                     <input type="number" value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder={form.type === 'percentage' ? '20' : '500'} />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Min Order Amount</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Min Order Amount</label>
                     <input type="number" value={form.minOrderAmount} onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="0 = no minimum" />
                   </div>
                 </div>
@@ -236,11 +236,11 @@ export default function AdminCouponsPage() {
                 {/* Max Discount + Usage Limit */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Max Discount (₹)</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Max Discount (₹)</label>
                     <input type="number" value={form.maxDiscount} onChange={(e) => setForm({ ...form, maxDiscount: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="0 = no cap" />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Total Usage Limit</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Total Usage Limit</label>
                     <input type="number" value={form.usageLimit} onChange={(e) => setForm({ ...form, usageLimit: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="0 = unlimited" />
                   </div>
                 </div>
@@ -248,18 +248,18 @@ export default function AdminCouponsPage() {
                 {/* Per User Limit + Priority */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Per User Limit</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Per User Limit</label>
                     <input type="number" value={form.perUserLimit} onChange={(e) => setForm({ ...form, perUserLimit: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Priority</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Priority</label>
                     <input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Higher = applied first" />
                   </div>
                 </div>
 
                 {/* Applicable To */}
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Applicable To</label>
+                  <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Applicable To</label>
                   <select value={form.applicableTo} onChange={(e) => setForm({ ...form, applicableTo: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40">
                     <option value="all">All Products</option>
                     <option value="specific_products">Specific Products</option>
@@ -272,18 +272,18 @@ export default function AdminCouponsPage() {
                 {/* Dates */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Active From</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Active From</label>
                     <input type="date" value={form.activeFrom} onChange={(e) => setForm({ ...form, activeFrom: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Expires At</label>
+                    <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Expires At</label>
                     <input type="date" value={form.expiresAt} onChange={(e) => setForm({ ...form, expiresAt: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" />
                   </div>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Description</label>
+                  <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Description</label>
                   <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="e.g., Summer sale offer" />
                 </div>
 

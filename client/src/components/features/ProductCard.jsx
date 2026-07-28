@@ -74,9 +74,9 @@ export default function ProductCard({ product, index = 0 }) {
             </button>
 
             {discount > 0 && (
-              <div className="absolute top-2.5 left-2.5 z-10 bg-accent text-[#050505] text-[11px] font-black px-2.5 py-1 rounded-full tracking-wide flex items-center gap-1">
+              <div className="absolute top-2.5 left-2.5 z-10 bg-accent text-[#050505] text-xs font-black px-2.5 py-1 rounded-full tracking-wide flex items-center gap-1">
                 <span>{discount}%</span>
-                <span className="text-[9px] opacity-80">OFF</span>
+                <span className="text-2xs opacity-80">OFF</span>
               </div>
             )}
 
@@ -102,7 +102,7 @@ export default function ProductCard({ product, index = 0 }) {
             <div className="absolute inset-x-0 bottom-0 p-2.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 translate-y-1 sm:translate-y-0 sm:group-hover:translate-y-0">
               <button
                 onClick={handleAddToCart}
-                className="w-full py-2 bg-white/10 backdrop-blur-md text-white text-[11px] font-semibold rounded-lg flex items-center justify-center gap-1.5 hover:bg-accent hover:text-[#050505] transition-colors duration-200"
+                className="w-full py-2 bg-white/10 backdrop-blur-md text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 hover:bg-accent hover:text-[#050505] transition-colors duration-200"
               >
                 <ShoppingBag size={12} /> Add to Cart
               </button>
@@ -115,7 +115,7 @@ export default function ProductCard({ product, index = 0 }) {
             </h3>
 
             {product.tags && product.tags.length > 0 && (
-              <span className="text-[10px] text-white/40 bg-white/5 px-2 py-0.5 rounded-full inline-block mb-1.5">
+              <span className="text-2xs text-white/40 bg-white/5 px-2 py-0.5 rounded-full inline-block mb-1.5">
                 {product.tags[0]}
               </span>
             )}
@@ -125,17 +125,17 @@ export default function ProductCard({ product, index = 0 }) {
                 {hasReviews ? (
                   <>
                     <Star size={9} className="fill-accent text-accent" />
-                    <span className="text-[10px] text-white/40">{product.rating || 5}</span>
-                    <span className="text-[9px] text-white/25">({product.reviewCount} reviews)</span>
+                    <span className="text-2xs text-white/40">{product.rating || 5}</span>
+                    <span className="text-2xs text-white/25">({product.reviewCount} reviews)</span>
                   </>
                 ) : (
-                  <span className="text-[9px] text-white/25 bg-white/5 px-1.5 py-0.5 rounded-full">New</span>
+                  <span className="text-2xs text-white/25 bg-white/5 px-1.5 py-0.5 rounded-full">New</span>
                 )}
               </div>
 
               <div className="flex items-baseline gap-1.5">
                 {product.pricing?.mrp > product.pricing?.sellingPrice && (
-                  <span className="text-[10px] text-white/25 line-through">
+                  <span className="text-2xs text-white/25 line-through">
                     ₹{(product.pricing.mrp).toLocaleString('en-IN')}
                   </span>
                 )}

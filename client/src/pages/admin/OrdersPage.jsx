@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Eye, X, RefreshCw, Package, Clock, Truck, CheckCircle, XCircle, MapPin, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import axios from 'axios';
+import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
 const STATUS_OPTIONS = ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
@@ -70,7 +71,7 @@ function OrderDetailModal({ order, onClose, onStatusChange }) {
               {order.shippingAddress.buildingName && <p className="text-xs text-white/40">🏢 {order.shippingAddress.buildingName}{order.shippingAddress.flatRoomNumber ? `, ${order.shippingAddress.flatRoomNumber}` : ''}</p>}
               <p className="text-xs text-white/40">{order.shippingAddress.street}{order.shippingAddress.area ? `, ${order.shippingAddress.area}` : ''}</p>
               <p className="text-xs text-white/40">{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}</p>
-              {order.shippingAddress.landmark && <p className="text-[10px] text-white/30 mt-0.5">📍 {order.shippingAddress.landmark}</p>}
+              {order.shippingAddress.landmark && <p className="text-2xs text-white/30 mt-0.5">📍 {order.shippingAddress.landmark}</p>}
             </div>
           )}
 
@@ -106,7 +107,7 @@ function OrderDetailModal({ order, onClose, onStatusChange }) {
             <p className="text-xs text-white/40 uppercase tracking-wider mb-2 flex items-center gap-1.5"><CreditCard size={10} /> Payment</p>
             <div className="flex items-center gap-3">
               <span className="text-xs text-white/60 capitalize">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Razorpay'}</span>
-              {order.paymentResult?.razorpayPaymentId && <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-400/10 text-green-400">Paid ✓</span>}
+              {order.paymentResult?.razorpayPaymentId && <span className="text-2xs px-2 py-0.5 rounded-full bg-green-400/10 text-green-400">Paid ✓</span>}
             </div>
           </div>
 
@@ -118,7 +119,7 @@ function OrderDetailModal({ order, onClose, onStatusChange }) {
                 const c = STATUS_CONFIG[s];
                 return (
                   <button key={s} onClick={() => setStatus(s)}
-                    className={cn('flex flex-col items-center gap-1.5 py-3 px-1 rounded-xl border text-[10px] font-medium transition-all',
+                    className={cn('flex flex-col items-center gap-1.5 py-3 px-1 rounded-xl border text-2xs font-medium transition-all',
                       status === s ? `${c.bg} ${c.border} ${c.color}` : 'border-white/5 text-white/30 hover:border-white/20 hover:text-white/60'
                     )}>
                     <c.icon size={14} />
@@ -149,8 +150,7 @@ export default function AdminOrdersPage() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('avenues_token');
-      const { data } = await axios.get('/api/orders', { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await api.get('/api/orders');
       setOrders(data);
     } catch (err) {
       toast.error('Failed to load orders');
@@ -201,7 +201,7 @@ export default function AdminOrdersPage() {
               )}>
               <div className={cn('flex items-center gap-1.5 mb-1', cfg.color)}>
                 <cfg.icon size={13} />
-                <span className="text-[10px] font-medium">{cfg.label}</span>
+                <span className="text-2xs font-medium">{cfg.label}</span>
               </div>
               <p className={cn('text-xl font-bold', filter === s ? cfg.color : 'text-white')}>
                 {loading ? '—' : counts[s] || 0}

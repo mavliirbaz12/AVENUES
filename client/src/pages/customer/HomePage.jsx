@@ -4,6 +4,7 @@ import {
   ArrowRight, Star, Sparkles, Shield, Truck, Clock, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { TESTIMONIALS } from '@/lib/constants';
 import { fadeUpVariants } from '@/lib/animations';
@@ -45,6 +46,23 @@ export default function HomePage() {
 
   return (
     <div className="bg-[#050505]">
+      <Helmet>
+        <title>Avenues | Premium Indian Fragrances — Free Shipping ₹500+</title>
+        <meta name="description" content="Discover Avenues — India's premium fragrance brand. Extrait de parfum that lasts 8–12 hours. Shop bestselling oud, floral & woody perfumes. Free shipping above ₹500." />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Avenues" />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="og:title" content="Avenues | Premium Indian Fragrances" />
+        <meta property="og:description" content="India's premium fragrance brand. 8–12 hour lasting extrait de parfum. IFRA certified, cruelty free." />
+        <meta property="og:url" content="https://avenues.in" />
+        <meta property="og:image" content="https://avenues.in/og-home.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@AvenuesIn" />
+        <meta name="twitter:title" content="Avenues | Premium Indian Fragrances" />
+        <meta name="twitter:description" content="Discover India's most luxurious homegrown fragrance brand." />
+        <meta name="twitter:image" content="https://avenues.in/og-home.jpg" />
+        <link rel="canonical" href="https://avenues.in" />
+      </Helmet>
 
       {/* HERO */}
       <section ref={heroRef} className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden pt-28 pb-20">
@@ -56,7 +74,7 @@ export default function HomePage() {
 
         <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="relative z-10 text-center px-5 max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
-            <span className="inline-flex items-center gap-2 text-accent text-[11px] font-bold tracking-[0.35em] uppercase mb-7 px-4 py-2 rounded-full bg-accent/8 border border-accent/15">
+            <span className="inline-flex items-center gap-2 text-accent text-xs font-bold tracking-marquee uppercase mb-7 px-4 py-2 rounded-full bg-accent/8 border border-accent/15">
               <Sparkles size={13} /> Premium Indian Fragrances
             </span>
           </motion.div>
@@ -113,24 +131,25 @@ export default function HomePage() {
           className="relative z-10 w-full overflow-hidden mb-6"
         >
           <div className="marquee-track flex whitespace-nowrap">
-            <div className="flex items-center gap-8 sm:gap-12 text-white/25 text-[10px] font-bold uppercase tracking-[0.25em] flex-shrink-0 px-4 sm:px-6">
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Free Delivery on ₹500+</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Crafted in India</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> 8-12 Hour Lasting</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> IFRA Certified</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Cruelty Free</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Free Delivery on ₹500+</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Crafted in India</span>
-            </div>
-            <div className="flex items-center gap-8 sm:gap-12 text-white/25 text-[10px] font-bold uppercase tracking-[0.25em] flex-shrink-0 px-4 sm:px-6">
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Free Delivery on ₹500+</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Crafted in India</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> 8-12 Hour Lasting</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> IFRA Certified</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Cruelty Free</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Free Delivery on ₹500+</span>
-              <span className="flex items-center gap-2"><span className="text-accent/60">★</span> Crafted in India</span>
-            </div>
+            {[
+              'Free Delivery on ₹500+', 'Crafted in India', '8-12 Hour Lasting',
+              'IFRA Certified', 'Cruelty Free', 'COD Available', 'Easy 7-Day Returns',
+              '100% Authentic', 'Premium Extrait de Parfum', '4.9 ★ Customer Rated',
+            ].map((t, i) => (
+              <span key={i} className="flex items-center gap-2 flex-shrink-0 mr-10 sm:mr-14 text-white/25 text-2xs font-bold uppercase tracking-marquee">
+                <span className="text-accent/60">★</span> {t}
+              </span>
+            ))}
+            {/* Duplicate set for seamless CSS loop */}
+            {[
+              'Free Delivery on ₹500+', 'Crafted in India', '8-12 Hour Lasting',
+              'IFRA Certified', 'Cruelty Free', 'COD Available', 'Easy 7-Day Returns',
+              '100% Authentic', 'Premium Extrait de Parfum', '4.9 ★ Customer Rated',
+            ].map((t, i) => (
+              <span key={`dup-${i}`} className="flex items-center gap-2 flex-shrink-0 mr-10 sm:mr-14 text-white/25 text-2xs font-bold uppercase tracking-marquee">
+                <span className="text-accent/60">★</span> {t}
+              </span>
+            ))}
           </div>
         </motion.div>
 
@@ -153,7 +172,7 @@ export default function HomePage() {
             variants={{ show: { transition: { staggerChildren: 0.1 } } }}
             className="text-center mb-14"
           >
-            <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-[0.25em] uppercase font-bold">The Lineup</motion.span>
+            <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-marquee uppercase font-bold">The Lineup</motion.span>
             <motion.h2 variants={fadeUpVariants} className="font-display text-3xl sm:text-5xl font-bold mt-3 text-white">Featured Fragrances</motion.h2>
             <motion.p variants={fadeUpVariants} className="text-white/45 mt-4 max-w-md mx-auto text-sm sm:text-base">Five scents. One brand. Zero regrets. Every bottle is a conversation starter.</motion.p>
           </motion.div>
@@ -190,7 +209,7 @@ export default function HomePage() {
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-80px' }}
               variants={{ show: { transition: { staggerChildren: 0.1 } } }}>
               <motion.div variants={fadeUpVariants}>
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold tracking-[0.2em] uppercase mb-7">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-2xs font-bold tracking-label uppercase mb-7">
                   <Sparkles size={13} className="animate-pulse" /> New Arrival
                 </span>
               </motion.div>
@@ -204,11 +223,11 @@ export default function HomePage() {
               <motion.div variants={fadeUpVariants} className="flex gap-4 mb-10">
                 <div className="bg-[#111111] border border-white/10 p-4 rounded-2xl flex-1 min-w-[120px] hover:border-accent/25 transition-colors group">
                   <p className="text-3xl font-display font-bold text-white group-hover:text-accent transition-colors">12<span className="text-lg text-accent">+</span></p>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-semibold">Hours Lasting</p>
+                  <p className="text-2xs text-white/40 uppercase tracking-widest mt-1 font-semibold">Hours Lasting</p>
                 </div>
                 <div className="bg-[#111111] border border-white/10 p-4 rounded-2xl flex-1 min-w-[120px] hover:border-accent/25 transition-colors group">
                   <p className="text-xl font-display font-bold text-white group-hover:text-accent transition-colors mt-1">Extrait</p>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-semibold">De Parfum</p>
+                  <p className="text-2xs text-white/40 uppercase tracking-widest mt-1 font-semibold">De Parfum</p>
                 </div>
               </motion.div>
               <motion.div variants={fadeUpVariants} className="flex flex-wrap items-center gap-6">
@@ -233,8 +252,11 @@ export default function HomePage() {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]">
-                      <span className="text-[120px] sm:text-[160px] drop-shadow-2xl select-none opacity-60">🧴</span>
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1610] to-[#0d0b08] gap-3 p-6">
+                      <div className="w-16 h-28 rounded-xl bg-gradient-to-b from-accent/30 to-accent/5 border border-accent/20 shadow-lg shadow-accent/10 flex items-end justify-center pb-2 flex-shrink-0">
+                        <div className="w-8 h-2 rounded-full bg-accent/40" />
+                      </div>
+                      <p className="text-accent/40 text-2xs tracking-label uppercase font-bold">Product Image</p>
                     </div>
                   )}
                 </div>
@@ -245,14 +267,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <QuizSection />
+      <div id="quiz"><QuizSection /></div>
 
       {/* TOP RATED */}
       <section className="py-20 sm:py-28 bg-[#050505] border-y border-white/5">
         <div className="container-luxury">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ show: { transition: { staggerChildren: 0.08 } } }} className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-12 gap-4">
             <div>
-              <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-[0.25em] uppercase font-bold">Bestsellers</motion.span>
+              <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-marquee uppercase font-bold">Bestsellers</motion.span>
               <motion.h2 variants={fadeUpVariants} className="font-display text-3xl sm:text-5xl font-bold mt-3 text-white">Top Rated</motion.h2>
             </div>
             <motion.div variants={fadeUpVariants}>
@@ -279,7 +301,7 @@ export default function HomePage() {
       <section className="py-20 sm:py-28 bg-[#070707]">
         <div className="container-luxury">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ show: { transition: { staggerChildren: 0.08 } } }} className="text-center mb-14">
-            <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-[0.25em] uppercase font-bold">Why Choose Us</motion.span>
+            <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-marquee uppercase font-bold">Why Choose Us</motion.span>
             <motion.h2 variants={fadeUpVariants} className="font-display text-3xl sm:text-5xl font-bold mt-3 text-white">The Avenues Difference</motion.h2>
           </motion.div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -307,7 +329,7 @@ export default function HomePage() {
       >
         <div className="container-luxury">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ show: { transition: { staggerChildren: 0.08 } } }} className="text-center mb-14">
-            <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-[0.25em] uppercase font-bold">Reviews</motion.span>
+            <motion.span variants={fadeUpVariants} className="text-accent text-xs tracking-marquee uppercase font-bold">Reviews</motion.span>
             <motion.h2 variants={fadeUpVariants} className="font-display text-3xl sm:text-5xl font-bold mt-3 text-white">Real People. Real Compliments.</motion.h2>
           </motion.div>
           <div className="max-w-2xl mx-auto">
@@ -326,7 +348,7 @@ export default function HomePage() {
                   </div>
                   <div className="text-left">
                     <p className="font-semibold text-white text-sm">{TESTIMONIALS[currentTestimonial].name}</p>
-                    <p className="text-[11px] text-white/40">{TESTIMONIALS[currentTestimonial].product}</p>
+                    <p className="text-xs text-white/40">{TESTIMONIALS[currentTestimonial].product}</p>
                   </div>
                 </div>
               </div>

@@ -39,7 +39,7 @@ export default function AboutPage() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="text-accent text-xs tracking-[0.25em] uppercase font-bold mb-4 block">
+          <span className="text-accent text-xs tracking-marquee uppercase font-bold mb-4 block">
             About Us
           </span>
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">

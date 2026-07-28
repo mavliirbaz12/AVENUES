@@ -102,26 +102,28 @@
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
+  /* Primary CTAs always font-bold */
   .btn-primary {
-    @apply btn bg-white text-[#050505]
+    @apply btn bg-white text-[#050505] font-bold
            hover:bg-accent hover:text-[#050505] hover:shadow-gold
            active:scale-95 focus:ring-accent/50;
   }
 
+  /* Secondary uses font-medium */
   .btn-secondary {
-    @apply btn bg-transparent text-white border-2 border-white
+    @apply btn bg-transparent text-white border border-white/20 font-medium
            hover:bg-white hover:text-[#050505] hover:shadow-gold
            active:scale-95 focus:ring-white/30;
   }
 
   .btn-accent {
-    @apply btn bg-accent text-[#050505] font-semibold
+    @apply btn bg-accent text-[#050505] font-bold
            hover:bg-accent-600 hover:shadow-gold
            active:scale-95 focus:ring-accent/50;
   }
 
   .btn-ghost {
-    @apply btn text-white bg-transparent px-4 py-2
+    @apply btn text-white bg-transparent px-4 py-2 font-medium
            hover:bg-white/10 focus:ring-white/20;
   }
 
@@ -139,7 +141,7 @@
 
   /* Outline button for secondary CTAs */
   .btn-outline {
-    @apply btn text-white/70 border border-white/15 px-6 py-3 rounded-full
+    @apply btn text-white/70 border border-white/15 px-6 py-3 rounded-full font-medium
            hover:text-white hover:border-white/30 hover:bg-white/5
            focus:ring-accent/30;
   }
@@ -152,6 +154,41 @@
   /* Large button variant */
   .btn-lg {
     @apply px-8 py-4 text-base;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     TYPOGRAPHY UTILITIES
+     Standardized type roles — use these instead of arbitrary values
+  ────────────────────────────────────────────────────── */
+
+  /* Uppercase label — form labels, section eyebrows, badge text */
+  .label-ui {
+    @apply text-2xs font-bold uppercase tracking-label;
+  }
+
+  /* Section eyebrow above headings */
+  .eyebrow {
+    @apply text-2xs font-bold uppercase tracking-label text-accent;
+  }
+
+  /* Marquee / trust bar text */
+  .trust-text {
+    @apply text-2xs font-bold uppercase tracking-marquee text-white/25;
+  }
+
+  /* Card meta info (timestamps, IDs) */
+  .meta-text {
+    @apply text-xs text-white/40;
+  }
+
+  /* Price display */
+  .price-display {
+    @apply text-sm font-bold text-white;
+  }
+
+  /* Price strikethrough */
+  .price-mrp {
+    @apply text-xs text-white/25 line-through;
   }
 
   /* ──────────────────────────────────────────────────────
@@ -242,7 +279,7 @@
   }
 
   .badge-gold {
-    @apply badge bg-accent text-[#050505] text-[10px] font-black px-2 py-1 
+    @apply badge bg-accent text-[#050505] text-2xs font-black px-2 py-1 
            rounded-md tracking-wide;
   }
 
@@ -366,12 +403,40 @@
   }
 
   /* ──────────────────────────────────────────────────────
-     TYPOGRAPHY
-     Text utility classes
+     TYPOGRAPHY — Enforced roles
+     font-display (Playfair) → headings & product names ONLY
+     font-body (Inter) → all UI: labels, buttons, nav, badges
   ────────────────────────────────────────────────────── */
-  
+
   .heading-display {
-    @apply font-display font-bold tracking-tight;
+    @apply font-display font-bold tracking-tighter;
+  }
+
+  /* Hero H1 */
+  .heading-hero {
+    @apply font-display font-bold tracking-tighter leading-none;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+  }
+
+  /* Section H2 */
+  .heading-section {
+    @apply font-display font-semibold tracking-tight;
+    font-size: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  /* Card/Product title */
+  .heading-card {
+    @apply font-display font-bold text-sm leading-snug;
+  }
+
+  /* Uppercase eyebrow label (always Inter) */
+  .label-eyebrow {
+    @apply font-body text-2xs font-bold uppercase tracking-label text-accent;
+  }
+
+  /* Form field label (always Inter) */
+  .label-field {
+    @apply font-body text-2xs font-semibold uppercase tracking-widest text-white/25 mb-1.5;
   }
 
   .text-muted {
@@ -399,12 +464,12 @@
 
   .badge-count {
     @apply absolute -top-0.5 -right-0.5 w-4 h-4 bg-accent 
-           text-[10px] font-bold text-[#050505] rounded-full 
+           text-2xs font-bold text-[#050505] rounded-full 
            flex items-center justify-center;
   }
 
   .chip {
-    @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 
+    @apply inline-flex items-center text-2xs font-semibold px-2 py-0.5 
            rounded-full bg-accent/10 text-accent/80 uppercase tracking-wide;
   }
 

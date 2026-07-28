@@ -17,7 +17,7 @@ function AccordionItem({ id, title, children, openAccordion, toggleAccordion }) 
   return (
     <div className="border-b border-white/10 last:border-0">
       <button onClick={() => toggleAccordion(id)} className="w-full py-5 flex items-center justify-between text-left group">
-        <span className="font-semibold text-white text-[15px] group-hover:text-accent transition-colors">{title}</span>
+        <span className="font-semibold text-white text-sm group-hover:text-accent transition-colors">{title}</span>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.25 }}>
           <ChevronDown size={18} className="text-white/40" />
         </motion.div>
@@ -25,7 +25,7 @@ function AccordionItem({ id, title, children, openAccordion, toggleAccordion }) 
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.28 }} className="overflow-hidden">
-            <div className="pb-6 text-white/65 text-[14px] leading-relaxed">{children}</div>
+            <div className="pb-6 text-white/65 text-sm leading-relaxed">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -168,12 +168,19 @@ export default function ProductDetailPage() {
         <meta name="description" content={product.description} />
         <link rel="canonical" href={`https://avenues.in/product/${product.slug}`} />
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={product.name} />
-        <meta property="og:description" content={product.description} />
+        <meta property="og:site_name" content="Avenues" />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="og:title" content={`${product.name} | Avenues`} />
+        <meta property="og:description" content={product.description?.slice(0, 155)} />
         <meta property="og:image" content={product.images?.[0]} />
+        <meta property="og:url" content={`https://avenues.in/product/${product.slug}`} />
         <meta property="og:price:amount" content={String(product.pricing.sellingPrice)} />
         <meta property="og:price:currency" content="INR" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@AvenuesIn" />
+        <meta name="twitter:title" content={`${product.name} | Avenues`} />
+        <meta name="twitter:description" content={product.description?.slice(0, 155)} />
+        <meta name="twitter:image" content={product.images?.[0]} />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"Product","name":product.name,"description":product.description,"image":product.images,"offers":{"@type":"Offer","price":product.pricing.sellingPrice,"currency":"INR"}})}</script>
       </Helmet>
     <div className="bg-[#050505] text-white min-h-screen">
@@ -380,7 +387,7 @@ export default function ProductDetailPage() {
                             activeImg === i ? 'text-accent' : 'text-white/60'
                           )} />
                           <span className={cn(
-                            'text-[9px] font-medium uppercase tracking-wider',
+                            'text-2xs font-medium uppercase tracking-wider',
                             activeImg === i ? 'text-accent' : 'text-white/50'
                           )}>
                             {thumb.title}
@@ -421,7 +428,7 @@ export default function ProductDetailPage() {
             {/* Tags */}
             <div className="flex flex-wrap gap-2">
               {(product.tags || []).map((tag) => (
-                <span key={tag} className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 uppercase tracking-widest">
+                <span key={tag} className="text-2xs font-bold px-2.5 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 uppercase tracking-widest">
                   {tag}
                 </span>
               ))}
@@ -430,7 +437,7 @@ export default function ProductDetailPage() {
             {/* Name + Category */}
             <div>
               {product.categoryLabel && (
-                <p className="text-[10px] text-white/40 uppercase tracking-[0.3em] font-semibold mb-3">
+                <p className="text-2xs text-white/40 uppercase tracking-marquee font-semibold mb-3">
                   {product.categoryLabel}
                 </p>
               )}
@@ -468,7 +475,7 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            <p className="text-[15px] text-white/65 leading-relaxed border-t border-white/10 pt-5">
+            <p className="text-sm text-white/65 leading-relaxed border-t border-white/10 pt-5">
               {product.shortDescription}
             </p>
 
@@ -482,7 +489,7 @@ export default function ProductDetailPage() {
                 <div key={label} className="text-center p-3 bg-[#111111] rounded-xl border border-white/10 hover:border-accent/30 transition-colors">
                   <Icon size={18} className="mx-auto text-accent mb-2" />
                   <p className="text-sm font-bold text-white capitalize">{val}</p>
-                  <p className="text-[10px] text-white/40 mt-0.5 uppercase tracking-wider">{label}</p>
+                  <p className="text-2xs text-white/40 mt-0.5 uppercase tracking-wider">{label}</p>
                 </div>
               ))}
             </div>
@@ -529,7 +536,7 @@ export default function ProductDetailPage() {
                 ].map(({ icon: Icon, label }) => (
                   <div key={label} className="flex flex-col items-center gap-1.5 text-center">
                     <Icon size={16} className="text-accent" />
-                    <span className="text-[9px] uppercase tracking-wider text-white/40 leading-tight">{label}</span>
+                    <span className="text-2xs uppercase tracking-wider text-white/40 leading-tight">{label}</span>
                   </div>
                 ))}
               </div>
@@ -558,7 +565,7 @@ export default function ProductDetailPage() {
                           <span key={note} className="text-xs px-2.5 py-1 rounded-full bg-white/6 border border-white/10 text-white/80">{note}</span>
                         ))}
                       </div>
-                      <p className="text-[11px] text-white/35 italic">{g.desc}</p>
+                      <p className="text-xs text-white/35 italic">{g.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -632,7 +639,7 @@ export default function ProductDetailPage() {
               >
                 <span className="text-3xl mb-3 block">{g.icon}</span>
                 <h3 className="font-display text-lg font-bold text-white mb-1">{g.label}</h3>
-                <p className="text-[11px] text-white/40 uppercase tracking-wider mb-3">{g.desc}</p>
+                <p className="text-xs text-white/40 uppercase tracking-wider mb-3">{g.desc}</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {g.notes.map((note) => (
                     <span key={note} className="text-xs px-3 py-1.5 rounded-full bg-white/8 border border-white/10 text-white/75">

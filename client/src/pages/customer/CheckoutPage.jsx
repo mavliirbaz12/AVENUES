@@ -6,7 +6,8 @@ import useAuthStore from '@/store/authStore';
 import { formatCurrency } from '@/lib/utils';
 import { PAYMENT_METHODS } from '@/lib/constants';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '@/lib/api';
+import axios from 'axios'; // only for external postalpincode.in call
 import { Helmet } from 'react-helmet-async';
 
 const MapPicker = lazy(() => import('@/components/features/MapPicker'));
@@ -69,7 +70,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     const fetchRazorpayCustomer = async () => {
       try {
-        const { data } = await axios.post('/api/payments/create-customer', {});
+        const { data } = await api.post('/api/payments/create-customer', {});
         setRazorpayCustomerId(data.customerId);
       } catch { /* handle silently */ }
     };
@@ -83,7 +84,7 @@ export default function CheckoutPage() {
     }
     setSavingAddress(true);
     try {
-      const { data } = await axios.post('/api/users/addresses', newAddress);
+      const { data } = await api.post('/api/users/addresses', newAddress);
       setUser({ ...user, addresses: data });
       const saved = data[data.length - 1];
       setSelectedAddressId(saved._id);
@@ -99,7 +100,7 @@ export default function CheckoutPage() {
 
   const handleDeleteAddress = async (id) => {
     try {
-      const { data } = await axios.delete(`/api/users/addresses/${id}`);
+      const { data } = await api.delete(`/api/users/addresses/${id}`);
       setUser({ ...user, addresses: data });
       if (selectedAddressId === id) setSelectedAddressId(data.length > 0 ? data[0]._id : null);
       toast.success('Address removed');
@@ -124,7 +125,7 @@ export default function CheckoutPage() {
     if (!couponCode.trim()) { setCouponError('Please enter a coupon code'); return; }
     setApplyingCoupon(true);
     try {
-      const { data } = await axios.post('/api/coupons/validate', {
+      const { data } = await api.post('/api/coupons/validate', {
         code: couponCode.trim(),
         cartTotal: getSubtotal(),
         cartItems: items.map((item) => ({ product: item._id || item.id, quantity: item.quantity, price: item.pricing.sellingPrice })),
@@ -167,8 +168,7 @@ export default function CheckoutPage() {
     setProcessing(true);
 
     try {
-      const token = localStorage.getItem('avenues_token');
-      const headers = { Authorization: `Bearer ${token}` };
+      // api instance auto-attaches Bearer token from auth store
 
       if (paymentMethod === 'razorpay') {
         if (!window.Razorpay) {
@@ -177,7 +177,7 @@ export default function CheckoutPage() {
           return;
         }
         // Create Razorpay order
-        const { data: rpOrder } = await axios.post('/api/payments/create-order', {
+        const { data: rpOrder } = await api.post('/api/payments/create-order', {
           amount: getFinalTotal(),
           receipt: `order_${Date.now()}`,
           customerId: razorpayCustomerId,
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
           handler: async (response) => {
             try {
               // Verify payment
-              await axios.post('/api/payments/verify', {
+              await api.post('/api/payments/verify', {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
@@ -243,7 +243,7 @@ export default function CheckoutPage() {
                 whatsappUpdates: addr.whatsappUpdates !== false,
               };
 
-              const { data: order } = await axios.post('/api/users/orders', orderData, { headers });
+              const { data: order } = await api.post('/api/users/orders', orderData);
               clearCart();
               navigate(`/order-confirmation/${order.orderNumber || order._id}`);
             } catch {
@@ -300,7 +300,7 @@ export default function CheckoutPage() {
           whatsappUpdates: addr.whatsappUpdates !== false,
         };
 
-        const { data: order } = await axios.post('/api/users/orders', orderData, { headers });
+        const { data: order } = await api.post('/api/users/orders', orderData);
         clearCart();
         navigate(`/order-confirmation/${order.orderNumber || order._id}`);
       }
@@ -387,13 +387,13 @@ export default function CheckoutPage() {
                                 <div className="flex items-center gap-2 mb-1">
                                   {addr.label === 'Home' ? <Home size={12} className="text-white/40" /> : <Building2 size={12} className="text-white/40" />}
                                   <span className="text-xs font-semibold text-white">{addr.label}</span>
-                                  {addr.isDefault && <span className="text-[9px] bg-accent/15 text-accent px-1.5 py-0.5 rounded-full font-bold">DEFAULT</span>}
+                                  {addr.isDefault && <span className="text-2xs bg-accent/15 text-accent px-1.5 py-0.5 rounded-full font-bold">DEFAULT</span>}
                                 </div>
                                 <p className="text-sm text-white/60">{addr.fullName} • {addr.phone}</p>
                                 {addr.buildingName && <p className="text-xs text-white/40">🏢 {addr.buildingName}{addr.flatRoomNumber ? `, ${addr.flatRoomNumber}` : ''}</p>}
                                 <p className="text-xs text-white/40">{addr.street}{addr.area ? `, ${addr.area}` : ''}</p>
                                 <p className="text-xs text-white/40">{addr.city}, {addr.state} {addr.postalCode}</p>
-                                {addr.whatsappUpdates !== false && <span className="text-[9px] text-green-400 flex items-center gap-0.5 mt-1"><MessageCircle size={8} /> WhatsApp updates</span>}
+                                {addr.whatsappUpdates !== false && <span className="text-2xs text-green-400 flex items-center gap-0.5 mt-1"><MessageCircle size={8} /> WhatsApp updates</span>}
                               </div>
                             </div>
                             <button onClick={(e) => { e.stopPropagation(); handleDeleteAddress(addr._id); }} className="p-1.5 hover:bg-red-500/10 rounded-lg text-white/20 hover:text-red-400 transition-all"><Trash2 size={12} /></button>
@@ -417,55 +417,55 @@ export default function CheckoutPage() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-3 gap-3">
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Label</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Label</label>
                           <select value={newAddress.label} onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40">
                             <option value="Home">🏠 Home</option><option value="Work">🏢 Work</option><option value="Other">📍 Other</option>
                           </select>
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Full Name *</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Full Name *</label>
                           <input value={newAddress.fullName} onChange={(e) => setNewAddress({ ...newAddress, fullName: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Arjun Mehta" required />
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Phone *</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Phone *</label>
                           <input value={newAddress.phone} onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="+91 98765 43210" required />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Building / Society</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Building / Society</label>
                           <input value={newAddress.buildingName || ''} onChange={(e) => setNewAddress({ ...newAddress, buildingName: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Prestige Towers" />
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Flat / Room No.</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Flat / Room No.</label>
                           <input value={newAddress.flatRoomNumber || ''} onChange={(e) => setNewAddress({ ...newAddress, flatRoomNumber: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="B-402" />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Street Address *</label>
+                        <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Street Address *</label>
                         <input value={newAddress.street} onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="123, MG Road" required />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Area / Locality</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Area / Locality</label>
                           <input value={newAddress.area || ''} onChange={(e) => setNewAddress({ ...newAddress, area: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Bandra West" />
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Landmark</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Landmark</label>
                           <input value={newAddress.landmark || ''} onChange={(e) => setNewAddress({ ...newAddress, landmark: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Near Starbucks" />
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-3">
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">Pincode *</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">Pincode *</label>
                           <input value={newAddress.postalCode} onChange={(e) => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); setNewAddress({ ...newAddress, postalCode: v }); if (v.length === 6) lookupPincode(v, setNewAddress); }} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="400001" maxLength={6} required />
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">City *</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">City *</label>
                           <input value={newAddress.city} onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" placeholder="Mumbai" required />
                         </div>
                         <div>
-                          <label className="block text-[10px] uppercase tracking-widest text-white/25 mb-1">State *</label>
+                          <label className="block text-2xs uppercase tracking-widest text-white/25 mb-1">State *</label>
                           <select value={newAddress.state} onChange={(e) => setNewAddress({ ...newAddress, state: e.target.value })} className="w-full h-10 rounded-lg text-sm text-white bg-white/[0.03] border border-white/[0.06] px-3 focus:outline-none focus:border-accent/40" required>
                             <option value="">Select state</option>
                             <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -614,7 +614,7 @@ const isRazorpayDown = pm.id === 'razorpay' && !scriptLoaded;
                       <Check size={14} className="text-green-400" />
                       <div>
                         <span className="text-xs font-bold text-green-400 uppercase">{appliedCoupon.code}</span>
-                        <p className="text-[10px] text-white/40">
+                        <p className="text-2xs text-white/40">
                           {appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}% off` : `₹${appliedCoupon.value} off`}
                         </p>
                       </div>
@@ -648,7 +648,7 @@ const isRazorpayDown = pm.id === 'razorpay' && !scriptLoaded;
                       </button>
                     </div>
                     {couponError && (
-                      <p className="text-red-400 text-[10px] mt-1">{couponError}</p>
+                      <p className="text-red-400 text-2xs mt-1">{couponError}</p>
                     )}
                   </div>
                 )}
@@ -657,6 +657,18 @@ const isRazorpayDown = pm.id === 'razorpay' && !scriptLoaded;
               <div className="border-t border-white/10 pt-4 space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-white/50">Subtotal</span><span className="text-white">{formatCurrency(getSubtotal())}</span></div>
                 <div className="flex justify-between"><span className="text-white/50">Shipping</span><span className="text-white">{getShipping() === 0 ? <span className="text-accent font-semibold">FREE</span> : formatCurrency(getShipping())}</span></div>
+                <div className="flex justify-between items-center">
+                  <span className="text-white/30 text-2xs">📅 Est. delivery</span>
+                  <span className="text-white/40 text-2xs">
+                    {(() => {
+                      const d = new Date();
+                      d.setDate(d.getDate() + 5);
+                      const e = new Date();
+                      e.setDate(e.getDate() + 7);
+                      return `${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – ${e.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`;
+                    })()}
+                  </span>
+                </div>
                 <div className="flex justify-between"><span className="text-white/50">Tax (18%)</span><span className="text-white">{formatCurrency(getTax())}</span></div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between"><span className="text-green-400">Coupon Discount</span><span className="text-green-400">-{formatCurrency(couponDiscount)}</span></div>
@@ -700,7 +712,7 @@ const isRazorpayDown = pm.id === 'razorpay' && !scriptLoaded;
                   <span className="text-xs text-white/50">Save card for future purchases</span>
                 </label>
               )}
-              <p className="text-[10px] text-white/20 text-center mt-3">
+              <p className="text-2xs text-white/20 text-center mt-3">
                 {paymentMethod === 'cod' ? 'Pay when your order arrives' : 'Secure payment powered by Razorpay'}
               </p>
             </div>

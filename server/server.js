@@ -11,6 +11,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './src/config/db.js';
+import generateToken from './src/utils/generateToken.js';
 import productRoutes from './src/routes/productRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
 import orderRoutes from './src/routes/orderRoutes.js';
@@ -27,6 +28,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+// Critical env var validation — fail fast in production
+if (process.env.NODE_ENV === 'production') {
+  const required = ['JWT_SECRET', 'MONGO_URI', 'CLIENT_URL'];
+  const missing = required.filter((k) => !process.env[k]);
+  if (missing.length > 0) {
+    console.error(`FATAL: Missing required env vars: ${missing.join(', ')}`);
+    process.exit(1);
+  }
+}
+
 connectDB();
 
 const app = express();
@@ -35,8 +47,11 @@ app.use(express.json());
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }));
 
+if (!process.env.JWT_SECRET) {
+  console.warn('⚠️  WARNING: JWT_SECRET not set. Using insecure fallback — set this in production!');
+}
 app.use(session({
-  secret: process.env.JWT_SECRET || 'fallback-secret',
+  secret: process.env.JWT_SECRET || 'avenues-dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -75,11 +90,19 @@ app.use('/api/auth', phoneOtpRoutes);
 
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], session: true }));
 
-app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' }), (req, res) => {
+app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=google_auth_failed` }), (req, res) => {
   if (!req.user) return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=google_auth_failed`);
   const token = generateToken(req.user._id);
-  res.cookie('avenues_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
-  res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?token=${token}`);
+  const userData = encodeURIComponent(JSON.stringify({
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    email: req.user.email,
+    phone: req.user.phone || '',
+    role: req.user.role || 'user',
+    isEmailVerified: req.user.isEmailVerified,
+    addresses: req.user.addresses || [],
+  }));
+  res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?token=${token}&user=${userData}`);
 });
 
 app.get('/', (req, res) => res.send('Avenues API is running...'));
