@@ -29,6 +29,31 @@ export const getOrderById = async (req, res) => {
   }
 };
 
+// @desc    Get order tracking info
+// @route   GET /api/orders/:id/tracking
+export const getOrderTracking = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    if (!order.trackingNumber || !order.courierName) {
+      return res.status(400).json({ message: 'Tracking information not available for this order' });
+    }
+
+    const { getTrackingInfo } = await import('../services/trackingService.js');
+    const tracking = await getTrackingInfo(order.courierName, order.trackingNumber);
+
+    res.json({
+      orderNumber: order.orderNumber,
+      courierName: order.courierName,
+      trackingNumber: order.trackingNumber,
+      tracking,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch tracking', error: error.message });
+  }
+};
+
 // @desc    Update order status
 // @route   PUT /api/orders/:id/status
 export const updateOrderStatus = async (req, res) => {
